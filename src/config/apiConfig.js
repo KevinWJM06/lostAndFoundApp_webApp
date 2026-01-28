@@ -14,7 +14,7 @@ const config = {
     admin: {
         dashboardUrl: "/admin/dashboard",
     },
-    // Auth endpoints would go here or be handled by the API
+
     auth: {
         loginEndpoint: "/auth/login",
         registerEndpoint: "/auth/register"

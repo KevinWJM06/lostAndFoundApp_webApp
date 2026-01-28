@@ -1,41 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import apiConfig from '../config/apiConfig';
+
 
 const ViewItems = ({ onBack, isAdmin, onEdit, onDelete }) => {
     const [items, setItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                const response = await fetch(`${apiConfig.api.baseUrl}/items`); // Requires Backend API
-                if (response.ok) {
-                    const data = await response.json();
-                    setItems(data);
-                } else {
-                    console.error("Failed to fetch all items");
-                }
-            } catch (error) {
-                console.error("Error fetching items:", error);
 
-                // Dummy data for admin testing if backend is down
-                if (isAdmin) {
-                    setItems([
-                        {
-                            id: 666,
-                            name: "dummy data",
-                            location: "retarted poly",
-                            date: "28-01-2026",
-                            type: "Test"
-                        }
-                    ]);
-                }
-
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchItems();
+        setItems([]);
+        setIsLoading(false);
     }, []);
 
     const handleDelete = (item) => {
@@ -54,8 +27,7 @@ const ViewItems = ({ onBack, isAdmin, onEdit, onDelete }) => {
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
-        // If already dd/mm/yyyy or dd-mm-yyyy, return as is (replacing - with / if needed)
-        if (dateString.match(/^\d{2}[\/-]\d{2}[\/-]\d{4}$/)) return dateString.replace(/-/g, '/');
+        if (dateString.match(new RegExp('^\\d{2}[/-]\\d{2}[/-]\\d{4}$'))) return dateString.replace(/-/g, '/');
 
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return dateString;
@@ -114,7 +86,7 @@ const ViewItems = ({ onBack, isAdmin, onEdit, onDelete }) => {
                         <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>No items found in the database.</p>
                         <p style={{ marginTop: '0.5rem' }}>Try adjusting your search or check back later.</p>
                         <small style={{ display: 'block', marginTop: '1rem', color: '#999' }}>
-                            Data source: {apiConfig.api.baseUrl}
+                            Data source: Disconnected
                         </small>
                     </div>
                 )}

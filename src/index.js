@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import apiConfig from './config/apiConfig';
+
 import AddItem from './components/add';
 import ViewItems from './components/viewitems';
 import EditItem from './components/edit';
@@ -55,29 +55,13 @@ const RecentItems = ({ onViewAllClick }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     React.useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                const response = await fetch(`${apiConfig.api.baseUrl}/items/recent`); // Requires Backend API
-                if (response.ok) {
-                    const data = await response.json();
-                    setItems(data);
-                } else {
-                    console.error("Failed to fetch recent items");
-                    setItems([]);
-                }
-            } catch (error) {
-                console.error("Error fetching recent items:", error);
-                setItems([]);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchItems();
+        setItems([]);
+        setIsLoading(false);
     }, []);
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
-        if (dateString.match(/^\d{2}[\/-]\d{2}[\/-]\d{4}$/)) return dateString.replace(/-/g, '/');
+        if (dateString.match(new RegExp('^\\d{2}[/-]\\d{2}[/-]\\d{4}$'))) return dateString.replace(/-/g, '/');
 
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return dateString;
@@ -125,31 +109,18 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleLogin = async (e) => {
+    const handleLogin = (e) => {
         e.preventDefault();
 
-        try {
-            const response = await fetch(`${apiConfig.api.baseUrl}${apiConfig.auth.loginEndpoint}`, { // Requires Backend API
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
 
-            if (response.ok) {
-                onLoginSuccess();
-            } else {
-                setError('Invalid credentials');
-            }
-        } catch (err) {
-            console.warn("Auth Server Error:", err);
-            // Bypass for demo if backend is down
-            if (username && password) {
-                alert("Backend connection failed. Bypassing login (Demo Mode).");
-                onLoginSuccess();
-            } else {
-                setError('Connection failed. Enter any credentials to bypass.');
-            }
+        // Demo login only
+        if (username && password) {
+            onLoginSuccess();
+        } else {
+            setError('Please enter credentials');
         }
+
+
     };
 
     return (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import apiConfig from '../config/apiConfig';
+
 
 const EditItem = ({ item, onBack }) => {
     const [formData, setFormData] = useState({
@@ -30,26 +30,10 @@ const EditItem = ({ item, onBack }) => {
         }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-
-        try {
-            const response = await fetch(`${apiConfig.api.baseUrl}/items/${item.id}`, { // Requires Backend API
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-
-            if (response.ok) {
-                alert("Item updated successfully!");
-                onBack();
-            } else {
-                alert("Failed to update item.");
-            }
-        } catch (error) {
-            console.error("Error updating item:", error);
-            alert("Error updating item.");
-        }
+        console.log("Updating item:", formData);
+        onBack();
     };
 
     return (

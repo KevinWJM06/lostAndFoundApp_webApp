@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import apiConfig from '../config/apiConfig';
+
 
 const AddItem = ({ onBack }) => {
     const [formData, setFormData] = useState({
@@ -18,26 +18,10 @@ const AddItem = ({ onBack }) => {
         }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-
-        try {
-            const response = await fetch(`${apiConfig.api.baseUrl}/items`, { // Requires Backend API
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-
-            if (response.ok) {
-                alert("Item reported successfully!");
-                onBack();
-            } else {
-                alert("Failed to report item. Please try again.");
-            }
-        } catch (error) {
-            console.error("Error reporting item:", error);
-            alert("Error reporting item. Please check your connection.");
-        }
+        console.log("Submitting item:", formData);
+        onBack();
     };
 
     return (
