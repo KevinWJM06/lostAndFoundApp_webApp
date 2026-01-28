@@ -206,10 +206,6 @@ const AdminDashboard = ({ onLogout }) => {
                 ) : (
                     <DeleteItem item={itemToDelete} onBack={handleBackToList} onConfirm={handleConfirmDelete} />
                 )}
-
-                <p style={{ textAlign: 'center', marginTop: '1rem', fontStyle: 'italic', fontSize: '0.9rem', color: '#666' }}>
-                    (Stats are placeholders awaiting backend connection)
-                </p>
             </div>
         </div>
     );
