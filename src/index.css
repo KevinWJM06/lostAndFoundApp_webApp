@@ -1,94 +1,128 @@
 :root {
-  /* Premium Color Palette */
-  --primary-navy: #0f172a;
-  --secondary-teal: #14b8a6;
-  --accent-gold: #f59e0b;
-  --text-light: #f8fafc;
-  --text-muted: #94a3b8;
-  --bg-dark: #020617;
-  --glass-bg: rgba(15, 23, 42, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  
-  /* Spacing & Layout */
-  --container-width: 1200px;
-  --header-height: 80px;
+    /* School Portal - Light Academic Palette */
+    --primary-blue: #2563eb;
+    /* Royal Blue - Trustworthy */
+    --secondary-slate: #475569;
+    /* Slate Gray - Neutral text/accents */
+    --accent-crimson: #dc2626;
+    /* Alert/Important */
+
+    --bg-main: #f8fafc;
+    /* Off-white background */
+    --bg-white: #ffffff;
+    /* Pure white for cards/panels */
+    --text-main: #0f172a;
+    /* Dark Navy for main text */
+    --text-muted: #64748b;
+    /* Muted text */
+
+    --border-light: #e2e8f0;
+    /* Subtle borders */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+    /* Layout */
+    --header-height: 70px;
+    --container-width: 1200px;
 }
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color: var(--bg-dark);
-  color: var(--text-light);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    line-height: 1.5;
 }
 
 /* Utilities */
 .container {
-  max-width: var(--container-width);
-  margin: 0 auto;
-  padding: 0 2rem;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
 }
 
-.glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+/* Cards & Panels */
+.card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s;
 }
 
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Buttons */
 .btn {
-  display: inline-block;
-  padding: 12px 28px;
-  border-radius: 50px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  border: none;
-  font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    font-size: 0.95rem;
+    transition: all 0.2s;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--secondary-teal), #0d9488);
-  color: white;
-  box-shadow: 0 10px 15px -3px rgba(20, 184, 166, 0.3);
+    background-color: var(--primary-blue);
+    color: white;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 20px 25px -5px rgba(20, 184, 166, 0.4);
+    background-color: #1d4ed8;
 }
 
 .btn-outline {
-  background: transparent;
-  border: 2px solid var(--glass-border);
-  color: var(--text-light);
+    background: transparent;
+    border: 1px solid var(--primary-blue);
+    color: var(--primary-blue);
 }
 
 .btn-outline:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--text-light);
+    background-color: #eff6ff;
 }
 
-/* Typography hints */
-h1, h2, h3, h4, h5, h6 {
-  line-height: 1.2;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+/* Typography */
+h1,
+h2,
+h3 {
+    font-weight: 700;
+    color: var(--text-main);
 }
 
 h1 {
-  font-size: 3.5rem;
-  background: linear-gradient(to right, #fff, #94a3b8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+    font-size: 3rem;
+    letter-spacing: -0.02em;
+    /* Fixed: Adding standard background-clip for compatibility */
+    background: linear-gradient(to right, #1e40af, #2563eb);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input[type="text"]:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }

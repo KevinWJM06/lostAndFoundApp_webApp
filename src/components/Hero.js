@@ -3,57 +3,54 @@ import React from 'react';
 const Hero = () => {
     const styles = {
         hero: {
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-            paddingTop: 'var(--header-height)',
-            overflow: 'hidden'
+            paddingTop: 'calc(var(--header-height) + 4rem)',
+            paddingBottom: '4rem',
+            textAlign: 'center',
+            background: 'radial-gradient(ellipse at top, #eff6ff 0%, var(--bg-main) 70%)'
         },
         content: {
-            textAlign: 'center',
-            zIndex: 2,
-            maxWidth: '800px'
+            maxWidth: '700px',
+            margin: '0 auto'
+        },
+        headline: {
+            marginBottom: '1rem',
         },
         subhead: {
-            fontSize: '1.25rem',
+            fontSize: '1.2rem',
             color: 'var(--text-muted)',
             marginBottom: '2.5rem',
-            marginTop: '1rem'
         },
-        btnGroup: {
+        searchContainer: {
+            position: 'relative',
+            maxWidth: '500px',
+            margin: '0 auto 2.5rem auto'
+        },
+        actions: {
             display: 'flex',
-            gap: '1rem',
-            justifyContent: 'center'
-        },
-        glow: {
-            position: 'absolute',
-            width: '600px',
-            height: '600px',
-            background: 'radial-gradient(circle, rgba(20, 184, 166, 0.15) 0%, rgba(0,0,0,0) 70%)',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 1,
-            pointerEvents: 'none'
+            justifyContent: 'center',
+            gap: '1rem'
         }
     };
 
     return (
         <section style={styles.hero}>
-            <div style={styles.glow} />
-
             <div className="container" style={styles.content}>
-                <h1>Reconnect with what matters.</h1>
+                <h1 style={styles.headline}>Lost something on campus?</h1>
                 <p style={styles.subhead}>
-                    The modern platform to effectively report lost items and reunite with your belongings.
-                    Simple, secure, and fast.
+                    Quickly search the school repository or report an item you've found.
                 </p>
 
-                <div style={styles.btnGroup}>
-                    <button className="btn btn-primary">Report Lost Item</button>
-                    <button className="btn btn-outline">I Found Something</button>
+                <div style={styles.searchContainer}>
+                    <input
+                        type="text"
+                        placeholder="Search for items (e.g. 'Blue TI-84 Calculator')..."
+                        aria-label="Search lost items"
+                    />
+                </div>
+
+                <div style={styles.actions}>
+                    <button className="btn btn-primary">Report Found Item</button>
+                    <button className="btn btn-outline">View All Lost Items</button>
                 </div>
             </div>
         </section>
