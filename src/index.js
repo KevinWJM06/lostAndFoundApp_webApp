@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import apiConfig from './config/apiConfig';
+import AddItem from './components/add';
+import ViewItems from './components/viewitems';
+import EditItem from './components/edit';
+import DeleteItem from './components/delete';
 
 // --- Components ---
 
@@ -26,57 +30,90 @@ const Navbar = ({ onAdminClick }) => {
     );
 };
 
-const Hero = () => {
+const Hero = ({ onReportClick, onViewAllClick }) => {
     return (
         <section className="hero-section">
             <div className="container hero-content">
                 <h1 className="hero-headline">Lost something on campus?</h1>
                 <p className="hero-subhead">
-                    Quickly search the school repository or report an item you've found or lost.
+                    Quickly search the database or report an item you've found or lost.
                 </p>
 
-                <div className="hero-search-container">
-                    <input
-                        type="text"
-                        placeholder="Search for items (e.g. 'Blue TI-84 Calculator')..."
-                        aria-label="Search lost items"
-                    />
-                </div>
+
 
                 <div className="hero-actions">
-                    <button className="btn btn-primary">Report Found Item</button>
-                    <button className="btn btn-outline">View All Lost Items</button>
+                    <button className="btn btn-primary" onClick={onReportClick}>Report Found Item</button>
+                    <button className="btn btn-outline" onClick={onViewAllClick}>View All Lost Items</button>
                 </div>
             </div>
         </section>
     );
 };
 
-const RecentItems = () => {
-    const dummyItems = [
-        { id: 1, name: "Hydro Flask (Blue)", location: "Science Wing, Room 304", date: "Today", type: "Bottle" },
-        { id: 2, name: "Math Textbook (Calculus)", location: "Library, Table 4", date: "Yesterday", type: "Book" },
-        { id: 3, name: "AirPods Case", location: "Gymnasium Bleachers", date: "2 days ago", type: "Electronics" },
-        { id: 4, name: "North Face Jacket", location: "Main Cafeteria", date: "Jan 24", type: "Clothing" },
-    ];
+const RecentItems = ({ onViewAllClick }) => {
+    const [items, setItems] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    React.useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const response = await fetch(`${apiConfig.api.baseUrl}/items/recent`); // Requires Backend API
+                if (response.ok) {
+                    const data = await response.json();
+                    setItems(data);
+                } else {
+                    console.error("Failed to fetch recent items");
+                    setItems([]);
+                }
+            } catch (error) {
+                console.error("Error fetching recent items:", error);
+                setItems([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchItems();
+    }, []);
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        if (dateString.match(/^\d{2}[\/-]\d{2}[\/-]\d{4}$/)) return dateString.replace(/-/g, '/');
+
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
 
     return (
         <section className="recent-items-section">
             <div className="container">
                 <div className="recent-items-header">
                     <h2>Recently Found</h2>
-                    <a href="/browse" style={{ color: 'var(--primary-blue)', textDecoration: 'none', fontWeight: '500' }}>View All &rarr;</a>
+                    <span onClick={onViewAllClick} style={{ color: 'var(--primary-blue)', textDecoration: 'none', fontWeight: '500', cursor: 'pointer' }}>View All &rarr;</span>
                 </div>
 
                 <div className="recent-items-grid">
-                    {dummyItems.map(item => (
-                        <div key={item.id} className="card">
-                            <h3 className="item-title">{item.name}</h3>
-                            <div className="item-meta">📍 {item.location}</div>
-                            <div className="item-meta">🕒 {item.date}</div>
-                            <span className="item-tag">{item.type}</span>
+                    {isLoading ? (
+                        <p>Loading items from database...</p>
+                    ) : items.length > 0 ? (
+                        items.map(item => (
+                            <div key={item.id} className="card">
+                                <h3 className="item-title">{item.name}</h3>
+                                <div className="item-meta">📍 {item.location}</div>
+                                <div className="item-meta">🕒 {formatDate(item.date)}</div>
+                                <span className="item-tag">{item.type}</span>
+                            </div>
+                        ))
+                    ) : (
+                        <div style={{ padding: '2rem', textAlign: 'center', background: '#f8f9fa', borderRadius: '8px', gridColumn: '1 / -1' }}>
+                            <p style={{ color: '#6c757d' }}>No items found.</p>
+                            <small>Connect to backend database.</small>
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
         </section>
@@ -88,14 +125,30 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        const { dummyUser } = apiConfig.auth;
 
-        if (username === dummyUser.username && password === dummyUser.password) {
-            onLoginSuccess();
-        } else {
-            setError('Invalid username or password');
+        try {
+            const response = await fetch(`${apiConfig.api.baseUrl}${apiConfig.auth.loginEndpoint}`, { // Requires Backend API
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                onLoginSuccess();
+            } else {
+                setError('Invalid credentials');
+            }
+        } catch (err) {
+            console.warn("Auth Server Error:", err);
+            // Bypass for demo if backend is down
+            if (username && password) {
+                alert("Backend connection failed. Bypassing login (Demo Mode).");
+                onLoginSuccess();
+            } else {
+                setError('Connection failed. Enter any credentials to bypass.');
+            }
         }
     };
 
@@ -140,32 +193,51 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
 };
 
 const AdminDashboard = ({ onLogout }) => {
+    const [currentAdminView, setCurrentAdminView] = useState('list');
+    const [itemToEdit, setItemToEdit] = useState(null);
+    const [itemToDelete, setItemToDelete] = useState(null);
+
+    const handleEditClick = (item) => {
+        setItemToEdit(item);
+        setCurrentAdminView('edit');
+    };
+
+    const handleDeleteClick = (item) => {
+        setItemToDelete(item);
+        setCurrentAdminView('delete');
+    };
+
+    const handleBackToList = () => {
+        setItemToEdit(null);
+        setItemToDelete(null);
+        setCurrentAdminView('list');
+    };
+
+    const handleConfirmDelete = async (id) => {
+        // Placeholder for delete logic coming from delete.js
+        console.log("Delete confirmed for ID:", id);
+        // For now just go back to list as requested "NO FUNCTIONALITY"
+        handleBackToList();
+    };
+
     return (
         <div className="admin-overlay">
-            <div className="admin-container">
+            <div className="admin-container" style={{ maxWidth: '1200px' }}>
                 <div className="admin-header">
                     <h1>Admin Dashboard</h1>
                     <button className="btn btn-outline" onClick={onLogout}>Logout</button>
                 </div>
 
-                <div className="stats-grid">
-                    <div className="stat-card">
-                        <div className="stat-value">12</div>
-                        <div className="stat-label">Pending Reports</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-value">45</div>
-                        <div className="stat-label">Items in Storage</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-value">8</div>
-                        <div className="stat-label">Claims to Review</div>
-                    </div>
-                </div>
+                {currentAdminView === 'list' ? (
+                    <ViewItems isAdmin={true} onEdit={handleEditClick} onDelete={handleDeleteClick} />
+                ) : currentAdminView === 'edit' ? (
+                    <EditItem item={itemToEdit} onBack={handleBackToList} />
+                ) : (
+                    <DeleteItem item={itemToDelete} onBack={handleBackToList} onConfirm={handleConfirmDelete} />
+                )}
 
-                <h3>Recent Activity</h3>
-                <p style={{ color: 'var(--text-muted)', marginTop: '1rem' }}>
-                    System ready. Select a module from the sidebar (Coming Soon) to manage items.
+                <p style={{ textAlign: 'center', marginTop: '1rem', fontStyle: 'italic', fontSize: '0.9rem', color: '#666' }}>
+                    (Stats are placeholders awaiting backend connection)
                 </p>
             </div>
         </div>
@@ -177,6 +249,11 @@ const AdminDashboard = ({ onLogout }) => {
 function App() {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [currentView, setCurrentView] = useState('home');
+
+    const handleNavigateHome = () => setCurrentView('home');
+    const handleNavigateAdd = () => setCurrentView('add');
+    const handleNavigateViewAll = () => setCurrentView('viewItems');
 
     const handleAdminClick = () => {
         if (isLoggedIn) {
@@ -198,8 +275,17 @@ function App() {
     return (
         <div className="App">
             <Navbar onAdminClick={handleAdminClick} />
-            <Hero />
-            <RecentItems />
+
+            {currentView === 'home' ? (
+                <>
+                    <Hero onReportClick={handleNavigateAdd} onViewAllClick={handleNavigateViewAll} />
+                    <RecentItems onViewAllClick={handleNavigateViewAll} />
+                </>
+            ) : currentView === 'add' ? (
+                <AddItem onBack={handleNavigateHome} />
+            ) : (
+                <ViewItems onBack={handleNavigateHome} />
+            )}
 
             {isLoginOpen && (
                 <>
