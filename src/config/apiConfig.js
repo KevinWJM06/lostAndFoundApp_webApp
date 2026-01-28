@@ -14,12 +14,10 @@ const config = {
     admin: {
         dashboardUrl: "/admin/dashboard",
     },
-    // Dummy credentials for testing
+    // Auth endpoints would go here or be handled by the API
     auth: {
-        dummyUser: {
-            username: "admin",
-            password: "school123"
-        }
+        loginEndpoint: "/auth/login",
+        registerEndpoint: "/auth/register"
     }
 };
 

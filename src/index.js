@@ -11,7 +11,7 @@ const Navbar = ({ onAdminClick }) => {
             <div className="container navbar-container">
                 <a href="/" className="navbar-logo">
                     <div className="navbar-logo-icon"></div>
-                    Campus Lost & Found
+                    Lost & Found
                 </a>
 
                 <button
@@ -32,7 +32,7 @@ const Hero = () => {
             <div className="container hero-content">
                 <h1 className="hero-headline">Lost something on campus?</h1>
                 <p className="hero-subhead">
-                    Quickly search the school repository or report an item you've found.
+                    Quickly search the school repository or report an item you've found or lost.
                 </p>
 
                 <div className="hero-search-container">
