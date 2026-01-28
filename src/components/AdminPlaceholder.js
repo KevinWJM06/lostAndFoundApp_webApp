@@ -9,7 +9,7 @@ const AdminPlaceholder = ({ onClose }) => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(2, 6, 23, 0.9)',
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
             zIndex: 2000,
             display: 'flex',
             alignItems: 'center',
@@ -19,24 +19,29 @@ const AdminPlaceholder = ({ onClose }) => {
         panel: {
             width: '100%',
             maxWidth: '500px',
-            padding: '2rem'
+            padding: '2rem',
+            backgroundColor: '#0f172a', /* Hardcoded dark bg */
+            color: '#f8fafc',
+            borderRadius: '12px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
         },
         header: {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             marginBottom: '1.5rem',
-            borderBottom: '1px solid var(--glass-border)',
+            borderBottom: '1px solid rgba(255,255,255,0.1)',
             paddingBottom: '1rem'
         },
         title: {
             fontSize: '1.5rem',
-            color: 'var(--text-light)'
+            fontWeight: 'bold',
+            color: '#ffffff'
         },
         closeBtn: {
             background: 'none',
             border: 'none',
-            color: 'var(--text-muted)',
+            color: '#94a3b8',
             fontSize: '1.5rem',
             cursor: 'pointer'
         },
@@ -46,7 +51,7 @@ const AdminPlaceholder = ({ onClose }) => {
         label: {
             display: 'block',
             fontSize: '0.875rem',
-            color: 'var(--secondary-teal)',
+            color: '#38bdf8', /* Light blue */
             marginBottom: '0.5rem',
             textTransform: 'uppercase',
             letterSpacing: '0.05em'
@@ -57,21 +62,21 @@ const AdminPlaceholder = ({ onClose }) => {
             borderRadius: '8px',
             fontFamily: 'monospace',
             fontSize: '0.85rem',
-            color: 'var(--text-muted)',
-            border: '1px solid var(--glass-border)'
+            color: '#cbd5e1',
+            border: '1px solid rgba(255,255,255,0.1)'
         }
     };
 
     return (
         <div style={styles.overlay}>
-            <div className="glass-panel" style={styles.panel}>
+            <div style={styles.panel}>
                 <div style={styles.header}>
                     <h2 style={styles.title}>Admin Portal Placeholder</h2>
                     <button style={styles.closeBtn} onClick={onClose}>&times;</button>
                 </div>
 
                 <div style={styles.section}>
-                    <p style={{ marginBottom: '1rem', color: 'var(--text-muted)' }}>
+                    <p style={{ marginBottom: '1rem', color: '#cbd5e1' }}>
                         This area is implementing future administrative capabilities including:
                         <ul style={{ marginLeft: '1.5rem', marginTop: '0.5rem' }}>
                             <li>Data Creation & Modification</li>

@@ -1,23 +1,13 @@
 :root {
-    /* School Portal - Light Academic Palette */
     --primary-blue: #2563eb;
-    /* Royal Blue - Trustworthy */
     --secondary-slate: #475569;
-    /* Slate Gray - Neutral text/accents */
     --accent-crimson: #dc2626;
-    /* Alert/Important */
-
     --bg-main: #f8fafc;
-    /* Off-white background */
     --bg-white: #ffffff;
-    /* Pure white for cards/panels */
     --text-main: #0f172a;
-    /* Dark Navy for main text */
     --text-muted: #64748b;
-    /* Muted text */
 
     --border-light: #e2e8f0;
-    /* Subtle borders */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 

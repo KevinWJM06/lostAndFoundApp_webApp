@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import RecentItems from './components/RecentItems';
 import AdminPlaceholder from './components/AdminPlaceholder';
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
     <div className="App">
       <Navbar onAdminClick={() => setIsAdminOpen(true)} />
       <Hero />
+      <RecentItems />
 
       {isAdminOpen && (
         <AdminPlaceholder onClose={() => setIsAdminOpen(false)} />
