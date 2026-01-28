@@ -13,6 +13,13 @@ const config = {
     },
     admin: {
         dashboardUrl: "/admin/dashboard",
+    },
+    // Dummy credentials for testing
+    auth: {
+        dummyUser: {
+            username: "admin",
+            password: "school123"
+        }
     }
 };
 
