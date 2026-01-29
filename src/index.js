@@ -185,9 +185,7 @@ const AdminDashboard = ({ onLogout }) => {
     };
 
     const handleConfirmDelete = async (id) => {
-        // Placeholder for delete logic coming from delete.js
         console.log("Delete confirmed for ID:", id);
-        // For now just go back to list as requested "NO FUNCTIONALITY"
         handleBackToList();
     };
 

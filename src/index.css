@@ -104,7 +104,6 @@ h3 {
 h1 {
     font-size: 3rem;
     letter-spacing: -0.02em;
-    /* Fixed: Adding standard background-clip for compatibility */
     background: linear-gradient(to right, #1e40af, #2563eb);
     -webkit-background-clip: text;
     background-clip: text;
