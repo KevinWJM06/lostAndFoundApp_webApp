@@ -6,6 +6,7 @@ import AddItem from './components/add';
 import ViewItems from './components/viewitems';
 import EditItem from './components/edit';
 import DeleteItem from './components/delete';
+import RecentItems from './components/recentitems'; 
 import config from './config/apiConfig';
 import { MapPin } from 'lucide-react';
 

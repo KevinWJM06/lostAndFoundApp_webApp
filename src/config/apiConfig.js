@@ -1,6 +1,7 @@
 const config = {
     api: {
-        baseUrl: "https://lnfrp.onrender.com"
+        baseUrl: "https://lnfrp.onrender.com",
+        timeout:1000,
     }
 };
 
