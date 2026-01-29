@@ -75,7 +75,10 @@ const ViewItems = ({ onBack, isAdmin, onEdit, onDelete }) => {
                             <h3 className="item-title">{item.name}</h3>
                             <div className="item-meta"><MapPin size={16} /> {item.location}</div>
 
-                            <span className="item-tag">{item.type}</span>
+                            <span className="item-tag">{item.type}</span><br></br>
+                            <span className={`item-status ${item.status && item.status.toLowerCase().includes('avail') ? 'status-available' : item.status && item.status.toLowerCase() === 'claimed' ? 'status-claimed' : ''}`}>
+                                {item.status}
+                            </span>
 
                             {isAdmin && (
                                 <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
