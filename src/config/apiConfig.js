@@ -1,8 +1,8 @@
 const config = {
     api: {
-        baseUrl: "https://api.example.com/v1",
+        baseUrl: "https://lnfrp.onrender.com/items",
         apiKey: "YOUR_API_KEY_HERE",
-        timeout: 5000,
+        timeout: 1000,
     },
     database: {
         host: "db.example.com",
