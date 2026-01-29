@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 
 import config from '../config/apiConfig';
+import { MapPin, Calendar } from 'lucide-react';
 
 const ViewItems = ({ onBack, isAdmin, onEdit, onDelete }) => {
     const [items, setItems] = useState([]);
@@ -83,8 +84,8 @@ const ViewItems = ({ onBack, isAdmin, onEdit, onDelete }) => {
                     items.map(item => (
                         <div key={item.id} className="card">
                             <h3 className="item-title">{item.name}</h3>
-                            <div className="item-meta">📍 {item.location}</div>
-                            <div className="item-meta">🕒 {formatDate(item.date)}</div>
+                            <div className="item-meta"><MapPin size={16} /> {item.location}</div>
+                            <div className="item-meta"><Calendar size={16} /> {formatDate(item.date)}</div>
                             <span className="item-tag">{item.type}</span>
 
                             {isAdmin && (

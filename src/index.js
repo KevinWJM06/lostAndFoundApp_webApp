@@ -7,6 +7,7 @@ import ViewItems from './components/viewitems';
 import EditItem from './components/edit';
 import DeleteItem from './components/delete';
 import config from './config/apiConfig';
+import { MapPin, Calendar } from 'lucide-react';
 
 // --- Components ---
 
@@ -64,9 +65,7 @@ const RecentItems = ({ onViewAllClick }) => {
                 }
                 const data = await response.json();
 
-                // Transform and limit to recent items (e.g., last 3)
-                // Assuming the API returns items, we might want to reverse them if they are appended, or just take first 3.
-                // For now, taking the first 3.
+
                 const mappedItems = data.slice(0, 3).map(item => ({
                     id: item.id,
                     name: item.item_name,
@@ -115,9 +114,12 @@ const RecentItems = ({ onViewAllClick }) => {
                         items.map(item => (
                             <div key={item.id} className="card">
                                 <h3 className="item-title">{item.name}</h3>
-                                <div className="item-meta">📍 {item.location}</div>
-                                <div className="item-meta">🕒 {formatDate(item.date)}</div>
-                                <span className="item-tag">{item.type}</span>
+                                <div className="item-meta"><MapPin size={16} /> {item.location}</div>
+                                <div className="item-meta"><Calendar size={16} /> {formatDate(item.date)}</div>
+                                <span className="item-tag">{item.type}</span> <br></br>
+                                <span className={`item-status ${item.status && item.status.toLowerCase().includes('avail') ? 'status-available' : item.status && item.status.toLowerCase() === 'claimed' ? 'status-claimed' : ''}`}>
+                                    {item.status}
+                                </span>
                             </div>
                         ))
                     ) : (
