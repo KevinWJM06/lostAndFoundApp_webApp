@@ -60,7 +60,7 @@ const RecentItems = ({ onViewAllClick }) => {
     React.useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await fetch(config.api.baseUrl);
+                const response = await fetch(`${config.api.baseUrl}/items`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
 
