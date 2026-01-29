@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
@@ -9,28 +9,24 @@ import DeleteItem from './components/delete';
 import config from './config/apiConfig';
 import { MapPin } from 'lucide-react';
 
-// --- Components ---
-
-const Navbar = ({ onAdminClick }) => {
-    return (
-        <nav className="navbar">
-            <div className="container navbar-container">
-                <a href="/" className="navbar-logo">
-                    <div className="navbar-logo-icon"></div>
-                    Lost & Found
-                </a>
-
-                <button
-                    className="btn btn-outline"
-                    style={{ padding: '8px 16px', fontSize: '0.875rem' }}
-                    onClick={onAdminClick}
-                >
-                    Staff & Admin
-                </button>
-            </div>
-        </nav>
-    );
-};
+// --- Navbar Component ---
+const Navbar = ({ onAdminClick }) => (
+    <nav className="navbar">
+        <div className="container navbar-container">
+            <a href="/" className="navbar-logo">
+                <div className="navbar-logo-icon"></div>
+                Lost & Found
+            </a>
+            <button
+                className="btn btn-outline"
+                style={{ padding: '8px 16px', fontSize: '0.875rem' }}
+                onClick={onAdminClick}
+            >
+                Staff & Admin
+            </button>
+        </div>
+    </nav>
+);
 
 // --- Hero Component ---
 const Hero = ({ onReportClick, onViewAllClick }) => (
@@ -41,12 +37,8 @@ const Hero = ({ onReportClick, onViewAllClick }) => (
                 Quickly search the database or report an item you've found or lost.
             </p>
             <div className="hero-actions">
-                <button className="btn btn-primary" onClick={onReportClick}>
-                    Report Found Item
-                </button>
-                <button className="btn btn-outline" onClick={onViewAllClick}>
-                    View All Lost Items
-                </button>
+                <button className="btn btn-primary" onClick={onReportClick}>Report Found Item</button>
+                <button className="btn btn-outline" onClick={onViewAllClick}>View All Lost Items</button>
             </div>
         </div>
     </section>
@@ -57,21 +49,17 @@ const RecentItems = ({ onViewAllClick }) => {
     const [items, setItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await fetch(`${config.api.baseUrl}/items`);
+                const response = await fetch(`${config.api.baseUrl}`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
 
-                // Transform and limit to recent items (e.g., last 3)
-                // Assuming the API returns items, we might want to reverse them if they are appended, or just take first 3.
-                // For now, taking the first 3.
                 const mappedItems = data.slice(0, 3).map(item => ({
                     id: item.id,
                     name: item.item_name,
                     location: item.location,
-
                     type: item.category,
                     status: item.status
                 }));
@@ -87,19 +75,6 @@ const RecentItems = ({ onViewAllClick }) => {
         fetchItems();
     }, []);
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        if (dateString.match(new RegExp('^\\d{2}[/-]\\d{2}[/-]\\d{4}$'))) return dateString.replace(/-/g, '/');
-
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return dateString;
-
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    };
-
     return (
         <section className="recent-items-section">
             <div className="container">
@@ -112,6 +87,7 @@ const RecentItems = ({ onViewAllClick }) => {
                         View All &rarr;
                     </span>
                 </div>
+
                 <div className="recent-items-grid">
                     {isLoading ? (
                         <p>Loading items from database...</p>
@@ -120,9 +96,11 @@ const RecentItems = ({ onViewAllClick }) => {
                             <div key={item.id} className="card">
                                 <h3 className="item-title">{item.name}</h3>
                                 <div className="item-meta"><MapPin size={16} /> {item.location}</div>
-
-                                <span className="item-tag">{item.type}</span> <br></br>
-                                <span className={`item-status ${item.status && item.status.toLowerCase().includes('avail') ? 'status-available' : item.status && item.status.toLowerCase() === 'claimed' ? 'status-claimed' : ''}`}>
+                                <span className="item-tag">{item.type}</span><br/>
+                                <span className={`item-status ${
+                                    item.status?.toLowerCase().includes('avail') ? 'status-available' :
+                                    item.status?.toLowerCase() === 'claimed' ? 'status-claimed' : ''
+                                }`}>
                                     {item.status}
                                 </span>
                             </div>
@@ -147,11 +125,8 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
 
     const handleLogin = e => {
         e.preventDefault();
-        if (username && password) {
-            onLoginSuccess();
-        } else {
-            setError('Please enter credentials');
-        }
+        if (username && password) onLoginSuccess();
+        else setError('Please enter credentials');
     };
 
     return (
@@ -196,26 +171,10 @@ const AdminDashboard = ({ onLogout }) => {
     const [itemToEdit, setItemToEdit] = useState(null);
     const [itemToDelete, setItemToDelete] = useState(null);
 
-    const handleEditClick = item => {
-        setItemToEdit(item);
-        setCurrentAdminView('edit');
-    };
-
-    const handleDeleteClick = item => {
-        setItemToDelete(item);
-        setCurrentAdminView('delete');
-    };
-
-    const handleBackToList = () => {
-        setItemToEdit(null);
-        setItemToDelete(null);
-        setCurrentAdminView('list');
-    };
-
-    const handleConfirmDelete = async id => {
-        console.log("Delete confirmed for ID:", id);
-        handleBackToList();
-    };
+    const handleEditClick = item => { setItemToEdit(item); setCurrentAdminView('edit'); };
+    const handleDeleteClick = item => { setItemToDelete(item); setCurrentAdminView('delete'); };
+    const handleBackToList = () => { setItemToEdit(null); setItemToDelete(null); setCurrentAdminView('list'); };
+    const handleConfirmDelete = async id => { console.log("Delete confirmed for ID:", id); handleBackToList(); };
 
     return (
         <div className="admin-overlay">
@@ -245,13 +204,9 @@ function App() {
     const handleNavigateHome = () => setCurrentView('home');
     const handleNavigateAdd = () => setCurrentView('add');
     const handleNavigateViewAll = () => setCurrentView('viewItems');
-
     const handleAdminClick = () => setIsLoginOpen(true);
     const handleLoginSuccess = () => setIsLoggedIn(true);
-    const handleLogout = () => {
-        setIsLoggedIn(false);
-        setIsLoginOpen(false);
-    };
+    const handleLogout = () => { setIsLoggedIn(false); setIsLoginOpen(false); };
 
     return (
         <div className="App">
