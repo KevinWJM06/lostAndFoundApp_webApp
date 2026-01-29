@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 
 import config from '../config/apiConfig';
+import { MapPin } from 'lucide-react';
 
 const ViewItems = ({ onBack, isAdmin, onEdit, onDelete }) => {
     const [items, setItems] = useState([]);
@@ -21,7 +22,7 @@ const ViewItems = ({ onBack, isAdmin, onEdit, onDelete }) => {
                     id: item.id,
                     name: item.item_name,
                     location: item.location,
-                    date: item.date_found || '2024-01-01', // Fallback date if missing
+
                     type: item.category,
                     status: item.status
                 }));
@@ -51,18 +52,7 @@ const ViewItems = ({ onBack, isAdmin, onEdit, onDelete }) => {
         }
     };
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        if (dateString.match(new RegExp('^\\d{2}[/-]\\d{2}[/-]\\d{4}$'))) return dateString.replace(/-/g, '/');
 
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return dateString;
-
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    };
 
     return (
         <div className="container" style={{ padding: isAdmin ? '0' : 'calc(var(--header-height) + 2rem) 1.5rem 2rem 1.5rem' }}>
@@ -83,9 +73,12 @@ const ViewItems = ({ onBack, isAdmin, onEdit, onDelete }) => {
                     items.map(item => (
                         <div key={item.id} className="card">
                             <h3 className="item-title">{item.name}</h3>
-                            <div className="item-meta">📍 {item.location}</div>
-                            <div className="item-meta">🕒 {formatDate(item.date)}</div>
-                            <span className="item-tag">{item.type}</span>
+                            <div className="item-meta"><MapPin size={16} /> {item.location}</div>
+
+                            <span className="item-tag">{item.type}</span><br></br>
+                            <span className={`item-status ${item.status && item.status.toLowerCase().includes('avail') ? 'status-available' : item.status && item.status.toLowerCase() === 'claimed' ? 'status-claimed' : ''}`}>
+                                {item.status}
+                            </span>
 
                             {isAdmin && (
                                 <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
