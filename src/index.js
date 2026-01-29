@@ -8,49 +8,46 @@ import EditItem from './components/edit';
 import DeleteItem from './components/delete';
 import config from './config/apiConfig';
 
-// --- Components ---
+// --- Navbar Component ---
+const Navbar = ({ onAdminClick }) => (
+    <nav className="navbar">
+        <div className="container navbar-container">
+            <a href="/" className="navbar-logo">
+                <div className="navbar-logo-icon"></div>
+                Lost & Found
+            </a>
+            <button
+                className="btn btn-outline"
+                style={{ padding: '8px 16px', fontSize: '0.875rem' }}
+                onClick={onAdminClick}
+            >
+                Staff & Admin
+            </button>
+        </div>
+    </nav>
+);
 
-const Navbar = ({ onAdminClick }) => {
-    return (
-        <nav className="navbar">
-            <div className="container navbar-container">
-                <a href="/" className="navbar-logo">
-                    <div className="navbar-logo-icon"></div>
-                    Lost & Found
-                </a>
-
-                <button
-                    className="btn btn-outline"
-                    style={{ padding: '8px 16px', fontSize: '0.875rem' }}
-                    onClick={onAdminClick}
-                >
-                    Staff & Admin
+// --- Hero Component ---
+const Hero = ({ onReportClick, onViewAllClick }) => (
+    <section className="hero-section">
+        <div className="container hero-content">
+            <h1 className="hero-headline">Lost something on campus?</h1>
+            <p className="hero-subhead">
+                Quickly search the database or report an item you've found or lost.
+            </p>
+            <div className="hero-actions">
+                <button className="btn btn-primary" onClick={onReportClick}>
+                    Report Found Item
+                </button>
+                <button className="btn btn-outline" onClick={onViewAllClick}>
+                    View All Lost Items
                 </button>
             </div>
-        </nav>
-    );
-};
+        </div>
+    </section>
+);
 
-const Hero = ({ onReportClick, onViewAllClick }) => {
-    return (
-        <section className="hero-section">
-            <div className="container hero-content">
-                <h1 className="hero-headline">Lost something on campus?</h1>
-                <p className="hero-subhead">
-                    Quickly search the database or report an item you've found or lost.
-                </p>
-
-
-
-                <div className="hero-actions">
-                    <button className="btn btn-primary" onClick={onReportClick}>Report Found Item</button>
-                    <button className="btn btn-outline" onClick={onViewAllClick}>View All Lost Items</button>
-                </div>
-            </div>
-        </section>
-    );
-};
-
+// --- RecentItems Component ---
 const RecentItems = ({ onViewAllClick }) => {
     const [items, setItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -59,14 +56,9 @@ const RecentItems = ({ onViewAllClick }) => {
         const fetchItems = async () => {
             try {
                 const response = await fetch(config.api.baseUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
 
-                // Transform and limit to recent items (e.g., last 3)
-                // Assuming the API returns items, we might want to reverse them if they are appended, or just take first 3.
-                // For now, taking the first 3.
                 const mappedItems = data.slice(0, 3).map(item => ({
                     id: item.id,
                     name: item.item_name,
@@ -87,13 +79,11 @@ const RecentItems = ({ onViewAllClick }) => {
         fetchItems();
     }, []);
 
-    const formatDate = (dateString) => {
+    const formatDate = dateString => {
         if (!dateString) return '';
-        if (dateString.match(new RegExp('^\\d{2}[/-]\\d{2}[/-]\\d{4}$'))) return dateString.replace(/-/g, '/');
-
+        if (/^\d{2}[/-]\d{2}[/-]\d{4}$/.test(dateString)) return dateString.replace(/-/g, '/');
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return dateString;
-
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
@@ -105,9 +95,13 @@ const RecentItems = ({ onViewAllClick }) => {
             <div className="container">
                 <div className="recent-items-header">
                     <h2>Recently Found</h2>
-                    <span onClick={onViewAllClick} style={{ color: 'var(--primary-blue)', textDecoration: 'none', fontWeight: '500', cursor: 'pointer' }}>View All &rarr;</span>
+                    <span
+                        onClick={onViewAllClick}
+                        style={{ color: 'var(--primary-blue)', textDecoration: 'none', fontWeight: 500, cursor: 'pointer' }}
+                    >
+                        View All &rarr;
+                    </span>
                 </div>
-
                 <div className="recent-items-grid">
                     {isLoading ? (
                         <p>Loading items from database...</p>
@@ -121,7 +115,7 @@ const RecentItems = ({ onViewAllClick }) => {
                             </div>
                         ))
                     ) : (
-                        <div style={{ padding: '2rem', textAlign: 'center', background: '#f8f9fa', borderRadius: '8px', gridColumn: '1 / -1' }}>
+                        <div style={{ padding: '2rem', textAlign: 'center', background: '#f8f9fa', borderRadius: 8, gridColumn: '1 / -1' }}>
                             <p style={{ color: '#6c757d' }}>No items found.</p>
                             <small>Connect to backend database.</small>
                         </div>
@@ -132,32 +126,26 @@ const RecentItems = ({ onViewAllClick }) => {
     );
 };
 
+// --- LoginModal Component ---
 const LoginModal = ({ onClose, onLoginSuccess }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleLogin = (e) => {
+    const handleLogin = e => {
         e.preventDefault();
-
-
-        // Demo login only
         if (username && password) {
             onLoginSuccess();
         } else {
             setError('Please enter credentials');
         }
-
-
     };
 
     return (
         <div className="modal-overlay">
             <div className="login-modal">
                 <h2 className="login-title">Staff Login</h2>
-
                 {error && <div className="login-error">{error}</div>}
-
                 <form onSubmit={handleLogin}>
                     <div className="form-group">
                         <label className="form-label">Username</label>
@@ -165,22 +153,20 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
                             type="text"
                             className="form-input"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={e => setUsername(e.target.value)}
                             placeholder="Enter username"
                         />
                     </div>
-
                     <div className="form-group">
                         <label className="form-label">Password</label>
                         <input
                             type="password"
                             className="form-input"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={e => setPassword(e.target.value)}
                             placeholder="Enter password"
                         />
                     </div>
-
                     <div className="login-actions">
                         <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Login</button>
                         <button type="button" className="btn btn-outline" style={{ flex: 1 }} onClick={onClose}>Cancel</button>
@@ -191,17 +177,18 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
     );
 };
 
+// --- AdminDashboard Component ---
 const AdminDashboard = ({ onLogout }) => {
     const [currentAdminView, setCurrentAdminView] = useState('list');
     const [itemToEdit, setItemToEdit] = useState(null);
     const [itemToDelete, setItemToDelete] = useState(null);
 
-    const handleEditClick = (item) => {
+    const handleEditClick = item => {
         setItemToEdit(item);
         setCurrentAdminView('edit');
     };
 
-    const handleDeleteClick = (item) => {
+    const handleDeleteClick = item => {
         setItemToDelete(item);
         setCurrentAdminView('delete');
     };
@@ -212,19 +199,18 @@ const AdminDashboard = ({ onLogout }) => {
         setCurrentAdminView('list');
     };
 
-    const handleConfirmDelete = async (id) => {
+    const handleConfirmDelete = async id => {
         console.log("Delete confirmed for ID:", id);
         handleBackToList();
     };
 
     return (
         <div className="admin-overlay">
-            <div className="admin-container" style={{ maxWidth: '1200px' }}>
+            <div className="admin-container" style={{ maxWidth: 1200 }}>
                 <div className="admin-header">
                     <h1>Admin Dashboard</h1>
                     <button className="btn btn-outline" onClick={onLogout}>Logout</button>
                 </div>
-
                 {currentAdminView === 'list' ? (
                     <ViewItems isAdmin={true} onEdit={handleEditClick} onDelete={handleDeleteClick} />
                 ) : currentAdminView === 'edit' ? (
@@ -238,7 +224,6 @@ const AdminDashboard = ({ onLogout }) => {
 };
 
 // --- Main App Component ---
-
 function App() {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -248,18 +233,8 @@ function App() {
     const handleNavigateAdd = () => setCurrentView('add');
     const handleNavigateViewAll = () => setCurrentView('viewItems');
 
-    const handleAdminClick = () => {
-        if (isLoggedIn) {
-            setIsLoginOpen(true);
-        } else {
-            setIsLoginOpen(true);
-        }
-    };
-
-    const handleLoginSuccess = () => {
-        setIsLoggedIn(true);
-    };
-
+    const handleAdminClick = () => setIsLoginOpen(true);
+    const handleLoginSuccess = () => setIsLoggedIn(true);
     const handleLogout = () => {
         setIsLoggedIn(false);
         setIsLoginOpen(false);
@@ -268,7 +243,6 @@ function App() {
     return (
         <div className="App">
             <Navbar onAdminClick={handleAdminClick} />
-
             {currentView === 'home' ? (
                 <>
                     <Hero onReportClick={handleNavigateAdd} onViewAllClick={handleNavigateViewAll} />
@@ -279,16 +253,12 @@ function App() {
             ) : (
                 <ViewItems onBack={handleNavigateHome} />
             )}
-
             {isLoginOpen && (
                 <>
                     {isLoggedIn ? (
                         <AdminDashboard onLogout={handleLogout} />
                     ) : (
-                        <LoginModal
-                            onClose={() => setIsLoginOpen(false)}
-                            onLoginSuccess={handleLoginSuccess}
-                        />
+                        <LoginModal onClose={() => setIsLoginOpen(false)} onLoginSuccess={handleLoginSuccess} />
                     )}
                 </>
             )}
@@ -297,7 +267,6 @@ function App() {
 }
 
 // --- Entry Point ---
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
