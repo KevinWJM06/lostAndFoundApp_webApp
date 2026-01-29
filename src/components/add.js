@@ -5,7 +5,7 @@ const AddItem = ({ onBack }) => {
     const [formData, setFormData] = useState({
         name: '',
         location: '',
-        date: '',
+
         type: '',
         description: ''
     });
@@ -60,17 +60,7 @@ const AddItem = ({ onBack }) => {
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label className="form-label">Date Found</label>
-                        <input
-                            type="date"
-                            name="date"
-                            className="form-input"
-                            value={formData.date}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+
 
                     <div className="form-group">
                         <label className="form-label">Category</label>

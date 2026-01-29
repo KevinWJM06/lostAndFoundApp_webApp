@@ -7,7 +7,7 @@ import ViewItems from './components/viewitems';
 import EditItem from './components/edit';
 import DeleteItem from './components/delete';
 import config from './config/apiConfig';
-import { MapPin, Calendar } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 // --- Components ---
 
@@ -70,7 +70,7 @@ const RecentItems = ({ onViewAllClick }) => {
                     id: item.id,
                     name: item.item_name,
                     location: item.location,
-                    date: item.date_found || '2024-01-01',
+
                     type: item.category,
                     status: item.status
                 }));
@@ -86,18 +86,7 @@ const RecentItems = ({ onViewAllClick }) => {
         fetchItems();
     }, []);
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        if (dateString.match(new RegExp('^\\d{2}[/-]\\d{2}[/-]\\d{4}$'))) return dateString.replace(/-/g, '/');
 
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return dateString;
-
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    };
 
     return (
         <section className="recent-items-section">
@@ -115,7 +104,7 @@ const RecentItems = ({ onViewAllClick }) => {
                             <div key={item.id} className="card">
                                 <h3 className="item-title">{item.name}</h3>
                                 <div className="item-meta"><MapPin size={16} /> {item.location}</div>
-                                <div className="item-meta"><Calendar size={16} /> {formatDate(item.date)}</div>
+
                                 <span className="item-tag">{item.type}</span> <br></br>
                                 <span className={`item-status ${item.status && item.status.toLowerCase().includes('avail') ? 'status-available' : item.status && item.status.toLowerCase() === 'claimed' ? 'status-claimed' : ''}`}>
                                     {item.status}

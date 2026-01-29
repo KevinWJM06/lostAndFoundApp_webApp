@@ -5,7 +5,7 @@ const EditItem = ({ item, onBack }) => {
     const [formData, setFormData] = useState({
         name: '',
         location: '',
-        date: '',
+
         type: '',
         description: ''
     });
@@ -15,7 +15,7 @@ const EditItem = ({ item, onBack }) => {
             setFormData({
                 name: item.name || '',
                 location: item.location || '',
-                date: item.date || '',
+
                 type: item.type || '',
                 description: item.description || ''
             });
@@ -70,17 +70,7 @@ const EditItem = ({ item, onBack }) => {
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label className="form-label">Date Found</label>
-                        <input
-                            type="date"
-                            name="date"
-                            className="form-input"
-                            value={formData.date}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+
 
                     <div className="form-group">
                         <label className="form-label">Category</label>
