@@ -25,7 +25,7 @@ const Navbar = ({ onAdminClick }) => {
                     style={{ padding: '8px 16px', fontSize: '0.875rem' }}
                     onClick={onAdminClick}
                 >
-                    Staff & Admin
+                    Admin
                 </button>
             </div>
         </nav>
