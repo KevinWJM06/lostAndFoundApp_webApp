@@ -6,6 +6,7 @@ import AddItem from './components/add';
 import ViewItems from './components/viewitems';
 import EditItem from './components/edit';
 import DeleteItem from './components/delete';
+import config from './config/apiConfig';
 
 // --- Components ---
 
@@ -55,8 +56,35 @@ const RecentItems = ({ onViewAllClick }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     React.useEffect(() => {
-        setItems([]);
-        setIsLoading(false);
+        const fetchItems = async () => {
+            try {
+                const response = await fetch(config.api.baseUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                // Transform and limit to recent items (e.g., last 3)
+                // Assuming the API returns items, we might want to reverse them if they are appended, or just take first 3.
+                // For now, taking the first 3.
+                const mappedItems = data.slice(0, 3).map(item => ({
+                    id: item.id,
+                    name: item.item_name,
+                    location: item.location,
+                    date: item.date_found || '2024-01-01',
+                    type: item.category,
+                    status: item.status
+                }));
+
+                setItems(mappedItems);
+            } catch (error) {
+                console.error("Error fetching items:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchItems();
     }, []);
 
     const formatDate = (dateString) => {

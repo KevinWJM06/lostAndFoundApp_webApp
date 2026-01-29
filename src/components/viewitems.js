@@ -1,14 +1,40 @@
 import React, { useState, useEffect } from 'react';
 
 
+import config from '../config/apiConfig';
+
 const ViewItems = ({ onBack, isAdmin, onEdit, onDelete }) => {
     const [items, setItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const response = await fetch(config.api.baseUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
 
-        setItems([]);
-        setIsLoading(false);
+                // Transform API data to match component state structure
+                const mappedItems = data.map(item => ({
+                    id: item.id,
+                    name: item.item_name,
+                    location: item.location,
+                    date: item.date_found || '2024-01-01', // Fallback date if missing
+                    type: item.category,
+                    status: item.status
+                }));
+
+                setItems(mappedItems);
+            } catch (error) {
+                console.error("Error fetching items:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchItems();
     }, []);
 
     const handleDelete = (item) => {
