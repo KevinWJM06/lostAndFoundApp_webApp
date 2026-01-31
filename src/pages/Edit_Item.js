@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import config from "../config/API";
 
-const EditItem = ({ item, onBack }) => {
+const EditItem = ({ item, onBack, refreshItems }) => {
   const [formData, setFormData] = useState({
     name: "",
     location: "",
@@ -9,19 +9,20 @@ const EditItem = ({ item, onBack }) => {
     description: "",
   });
 
-  // Load selected item into form
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load selected item data into the form when the component mounts
   useEffect(() => {
     if (item) {
       setFormData({
         name: item.name || "",
         location: item.location || "",
-        type: item.category || "",
+        type: item.type || "", 
         description: item.description || "",
       });
     }
   }, [item]);
 
-  // ONLY updates form state
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -30,13 +31,13 @@ const EditItem = ({ item, onBack }) => {
     }));
   };
 
-  // Calls backend (async allowed here)
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       const response = await fetch(
-        `${API_URL}/items/${item.id}`,
+        `${config.api.baseUrl}/items/${item.id}`,
         {
           method: "PUT",
           headers: {
@@ -46,7 +47,8 @@ const EditItem = ({ item, onBack }) => {
             item_name: formData.name,
             category: formData.type,
             location: formData.location,
-            status: item.status,
+            description: formData.description,
+            status: item.status, // Keep the existing status
           }),
         }
       );
@@ -55,12 +57,19 @@ const EditItem = ({ item, onBack }) => {
         throw new Error("Failed to update item");
       }
 
-      console.log("Item updated successfully");
-      if (refreshItems) await refreshItems();
-      onBack();
+      alert("Item updated successfully!");
+      
+      // Refresh the main list if the function exists
+      if (refreshItems) {
+        await refreshItems();
+      }
+      
+      onBack(); // Go back to the dashboard list
     } catch (err) {
       console.error("Update error:", err);
-      alert("Failed to update item");
+      alert("Failed to update item. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -138,9 +147,10 @@ const EditItem = ({ item, onBack }) => {
           <button
             type="submit"
             className="btn btn-primary"
+            disabled={isSubmitting}
             style={{ width: "100%", marginTop: "1rem" }}
           >
-            Save Changes
+            {isSubmitting ? "Saving..." : "Save Changes"}
           </button>
         </form>
       </div>
