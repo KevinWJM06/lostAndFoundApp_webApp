@@ -1,98 +1,114 @@
 import React, { useState, useEffect } from "react";
+import ViewItems from "./viewitems";
+import EditItem from "./edit";
+import DeleteItem from "./delete";
 
-// 🔑 Use your Render backend URL
-const API_BASE_URL = "https://lnfrp.onrender.com";
+const API_BASE_URL = "https://lnfrp.onrender.com"; // Your backend URL
 
-const EditItem = ({ item, onBack, refreshItems }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    location: "",
-    type: "",
-    description: "",
-  });
+const AdminDashboard = ({ onLogout }) => {
+  const [items, setItems] = useState([]);
+  const [currentView, setCurrentView] = useState("list"); // "list", "edit", "delete"
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // --- Fetch items from backend ---
+  const fetchItems = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/items`);
+      if (!res.ok) throw new Error("Failed to fetch items");
+      const data = await res.json();
+
+      const mapped = data.map((item) => ({
+        id: item.id,
+        name: item.item_name,
+        location: item.location,
+        type: item.category,
+        status: item.status,
+        description: item.description,
+      }));
+
+      setItems(mapped);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setItems([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (item) {
-      setFormData({
-        name: item.name || "",
-        location: item.location || "",
-        type: item.type || "",
-        description: item.description || "",
-      });
-    }
-  }, [item]);
+    fetchItems();
+  }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  // --- Handlers ---
+  const handleEdit = (item) => {
+    setSelectedItem(item);
+    setCurrentView("edit");
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleDelete = (item) => {
+    setSelectedItem(item);
+    setCurrentView("delete");
+  };
 
+  const handleConfirmDelete = async (id) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/items/${item.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          item_name: formData.name,
-          category: formData.type,
-          location: formData.location,
-          status: item.status,
-        }),
-      });
-
-      if (!response.ok) throw new Error("Failed to update item");
-
-      await refreshItems(); // refresh parent list
-      onBack(); // go back to list
+      const res = await fetch(`${API_BASE_URL}/items/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      await fetchItems(); // Refresh list after deletion
+      setCurrentView("list");
+      setSelectedItem(null);
     } catch (err) {
-      console.error("Update error:", err);
-      alert("Failed to update item");
+      console.error(err);
+      alert("Failed to delete item");
     }
   };
 
-  if (!item) return null;
+  const handleBackToList = () => {
+    setCurrentView("list");
+    setSelectedItem(null);
+  };
 
   return (
-    <div className="container" style={{ padding: "0" }}>
-      <button className="btn btn-outline" onClick={onBack} style={{ marginBottom: "1rem" }}>
-        &larr; Back to List
-      </button>
-
-      <div className="card" style={{ maxWidth: "600px", margin: "0 auto" }}>
-        <h2 style={{ marginBottom: "1.5rem", textAlign: "center" }}>Edit Item</h2>
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Item Name</label>
-            <input type="text" name="name" value={formData.name} onChange={handleChange} required />
-          </div>
-
-          <div className="form-group">
-            <label>Location</label>
-            <input type="text" name="location" value={formData.location} onChange={handleChange} required />
-          </div>
-
-          <div className="form-group">
-            <label>Category</label>
-            <select name="type" value={formData.type} onChange={handleChange} required>
-              <option value="">Select</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Clothing">Clothing</option>
-              <option value="Bottle">Bottle</option>
-              <option value="Book">Book</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-
-          <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "1rem" }}>
-            Save Changes
+    <div className="admin-overlay">
+      <div className="admin-container" style={{ maxWidth: 1200 }}>
+        <div className="admin-header">
+          <h1>Admin Dashboard</h1>
+          <button className="btn btn-outline" onClick={onLogout}>
+            Logout
           </button>
-        </form>
+        </div>
+
+        {isLoading && currentView === "list" && <p>Loading items...</p>}
+
+        {currentView === "list" && !isLoading && (
+          <ViewItems
+            items={items}
+            isAdmin={true}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        )}
+
+        {currentView === "edit" && selectedItem && (
+          <EditItem
+            item={selectedItem}
+            onBack={handleBackToList}
+            refreshItems={fetchItems} // Refresh list after editing
+          />
+        )}
+
+        {currentView === "delete" && selectedItem && (
+          <DeleteItem
+            item={selectedItem}
+            onBack={handleBackToList}
+            onConfirm={() => handleConfirmDelete(selectedItem.id)}
+          />
+        )}
       </div>
     </div>
   );
 };
 
-export default EditItem;
+export default AdminDashboard;
