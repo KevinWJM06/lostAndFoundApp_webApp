@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import config from "../config/API";
+import api from './api';
 
 // FIX: Use './' because these files are in the same folder (src/pages)
 import ViewItems from "./All_Items"; 

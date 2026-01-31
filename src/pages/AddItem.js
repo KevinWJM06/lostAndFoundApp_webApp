@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import config from '../config/API';
+import api from './api';
 
 const AddItem = () => {
     const navigate = useNavigate();

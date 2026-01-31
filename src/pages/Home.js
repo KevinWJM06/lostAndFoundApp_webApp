@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import config from '../config/API';
+import api from './api';
 import { MapPin } from 'lucide-react';
 
 const Home = () => {

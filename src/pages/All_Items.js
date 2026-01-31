@@ -1,5 +1,5 @@
 import React from "react";
-import config from "../config/API";
+import api from './api';
 import { MapPin } from "lucide-react";
 
 const ViewItems = ({ items: initialItems, isAdmin, onEdit, onDelete, onBack }) => {

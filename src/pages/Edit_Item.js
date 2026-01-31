@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import config from "../config/API";
+import api from './api';
 
 const EditItem = ({ item, onBack, refreshItems }) => {
   const [formData, setFormData] = useState({
