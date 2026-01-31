@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+const API_URL = process.env.REACT_APP_API_URL;
 
 // 🔑 BACKEND BASE URL (Render)
 const API_BASE_URL = "https://lnfrp.onrender.com";
@@ -38,7 +39,7 @@ const EditItem = ({ item, onBack, refreshItems }) => {
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/items/${item.id}`,
+        `http://localhost:3000/items/${item.id}`,
         {
           method: "PUT",
           headers: {
