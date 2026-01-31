@@ -1,6 +1,6 @@
 // --- RecentItems Component ---
 import React, { useState, useEffect } from 'react';
-import config from '../config/API\\'; // make sure path is correct
+import config from '../config/API'; // make sure path is correct
 import { MapPin } from 'lucide-react';
 
 const RecentItems = ({ onViewAllClick }) => {
@@ -44,10 +44,7 @@ const RecentItems = ({ onViewAllClick }) => {
         if (!dateString) return '';
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return dateString;
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        return date.toLocaleDateString('en-GB');
     };
 
     return (

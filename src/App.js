@@ -1,6 +1,15 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import "./index.css";
+
+import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
+import LoginModal from "./components/Login_Modal";
+
 import AdminDashboard from "./pages/AdminDashboard";
+import RecentItems from "./components/RecentItems";
+import AddItem from "./pages/AddItem";
+import ViewItems from "./pages/ViewItems";
+
 
 function App() {
   const [currentView, setCurrentView] = useState('home');
@@ -41,3 +50,5 @@ function App() {
     </div>
   );
 }
+
+export default App;

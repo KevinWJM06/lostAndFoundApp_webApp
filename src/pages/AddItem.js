@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import config from '../config/API';
 
 const AddItem = ({ onBack }) => {
     const [formData, setFormData] = useState({
@@ -18,10 +18,37 @@ const AddItem = ({ onBack }) => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Submitting item:", formData);
-        onBack();
+        setIsSubmitting(true);
+        
+        try {
+            const response = await fetch('${config.api.baseUrl}/items', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // Map your form fields to the backend expected fields
+                body: JSON.stringify({
+                    item_name: formData.name,
+                    category: formData.type,
+                    location: formData.location,
+                    description: formData.description,
+                    status: 'Available', // Default status
+                    date_found: new Date().toISOString()
+                }),
+            });
+
+            if (!response.ok) throw new Error('Failed to submit item');
+            
+            alert('Item reported successfully!');
+            onBack();
+        } catch (error) {
+            console.error(error);
+            alert('Error reporting item. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
