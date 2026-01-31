@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api';
+import api from '../services/api';
 import { MapPin } from 'lucide-react';
 
 const Home = () => {
@@ -72,7 +72,7 @@ const Home = () => {
                                 <span className="item-tag">{item.type}</span>
                                 <br />
                                 <span className={`item-status ${item.status && item.status.toLowerCase().includes('avail') ? 'status-available' :
-                                        item.status && item.status.toLowerCase() === 'claimed' ? 'status-claimed' : ''
+                                    item.status && item.status.toLowerCase() === 'claimed' ? 'status-claimed' : ''
                                     }`}>
                                     {item.status}
                                 </span>
