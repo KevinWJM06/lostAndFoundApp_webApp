@@ -1,5 +1,5 @@
-import React from "react";
-import api from './api';
+import React, { useState, useEffect } from "react";
+import api from '../api';
 import { MapPin } from "lucide-react";
 
 const ViewItems = ({ items: initialItems, isAdmin, onEdit, onDelete, onBack }) => {
@@ -11,17 +11,16 @@ const ViewItems = ({ items: initialItems, isAdmin, onEdit, onDelete, onBack }) =
     if (!initialItems || initialItems.length === 0) {
       const fetchItems = async () => {
         try {
-          const res = await fetch('${config.api.baseUrl}/items');
-          const data = await res.json();
+          const { data } = await api.get('/items');
           const mapped = data.map((item) => ({
-             id: item.id,
-             name: item.item_name,
-             location: item.location,
-             type: item.category,
-             status: item.status,
+            id: item.id,
+            name: item.item_name,
+            location: item.location,
+            type: item.category,
+            status: item.status,
           }));
           setItems(mapped);
-        } catch(e) { console.error(e); }
+        } catch (e) { console.error(e); }
         setLoading(false);
       };
       // Only fetch if we are NOT admin (admin passes items in)
@@ -31,7 +30,7 @@ const ViewItems = ({ items: initialItems, isAdmin, onEdit, onDelete, onBack }) =
       setItems(initialItems);
       setLoading(false);
     }
-    }, [initialItems, isAdmin]);
+  }, [initialItems, isAdmin]);
 
   return (
     <div className="container" style={{ padding: isAdmin ? "0" : "2rem 1.5rem" }}>
@@ -46,7 +45,9 @@ const ViewItems = ({ items: initialItems, isAdmin, onEdit, onDelete, onBack }) =
       </div>
 
       <div className="recent-items-grid">
-        {items.length > 0 ? (
+        {loading ? (
+          <p style={{ padding: "1rem", textAlign: "center" }}>Loading items...</p>
+        ) : items.length > 0 ? (
           items.map((item) => (
             <div key={item.id} className="card">
               <h3 className="item-title">{item.name}</h3>
@@ -56,13 +57,12 @@ const ViewItems = ({ items: initialItems, isAdmin, onEdit, onDelete, onBack }) =
               <span className="item-tag">{item.type}</span>
               <br />
               <span
-                className={`item-status ${
-                  item.status && item.status.toLowerCase().includes("avail")
-                    ? "status-available"
-                    : item.status && item.status.toLowerCase() === "claimed"
+                className={`item-status ${item.status && item.status.toLowerCase().includes("avail")
+                  ? "status-available"
+                  : item.status && item.status.toLowerCase() === "claimed"
                     ? "status-claimed"
                     : ""
-                }`}
+                  }`}
               >
                 {item.status}
               </span>

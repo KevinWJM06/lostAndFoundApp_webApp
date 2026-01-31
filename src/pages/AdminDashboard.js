@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import api from './api';
+import api from '../api';
 
 // FIX: Use './' because these files are in the same folder (src/pages)
-import ViewItems from "./All_Items"; 
+import ViewItems from "./All_Items";
 import EditItem from "./Edit_Item";
 import DeleteItem from "./Confirm_delete";
 
@@ -16,9 +16,7 @@ const AdminDashboard = ({ onLogout }) => {
   const fetchItems = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('${config.api.baseUrl}/items');
-      if (!res.ok) throw new Error("Failed to fetch items");
-      const data = await res.json();
+      const { data } = await api.get('/items');
 
       const mapped = data.map((item) => ({
         id: item.id,
@@ -54,9 +52,8 @@ const AdminDashboard = ({ onLogout }) => {
 
   const handleConfirmDelete = async (id) => {
     try {
-      const res = await fetch('${config.api.baseUrl}/items/${id}, { method: "DELETE" }');
-      if (!res.ok) throw new Error("Delete failed");
-      await fetchItems(); 
+      await api.delete(`/items/${id}`);
+      await fetchItems();
       setCurrentView("list");
       setSelectedItem(null);
     } catch (err) {
@@ -93,7 +90,7 @@ const AdminDashboard = ({ onLogout }) => {
           <EditItem
             item={selectedItem}
             onBack={handleBackToList}
-            refreshItems={fetchItems} 
+            refreshItems={fetchItems}
           />
         )}
 

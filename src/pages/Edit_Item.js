@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from './api';
+import api from '../api';
 
 const EditItem = ({ item, onBack, refreshItems }) => {
   const [formData, setFormData] = useState({
@@ -17,7 +17,7 @@ const EditItem = ({ item, onBack, refreshItems }) => {
       setFormData({
         name: item.name || "",
         location: item.location || "",
-        type: item.type || "", 
+        type: item.type || "",
         description: item.description || "",
       });
     }
@@ -36,34 +36,21 @@ const EditItem = ({ item, onBack, refreshItems }) => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(
-        `${config.api.baseUrl}/items/${item.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            item_name: formData.name,
-            category: formData.type,
-            location: formData.location,
-            description: formData.description,
-            status: item.status, // Keep the existing status
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update item");
-      }
+      await api.put(`/items/${item.id}`, {
+        item_name: formData.name,
+        category: formData.type,
+        location: formData.location,
+        description: formData.description,
+        status: item.status, // Keep the existing status
+      });
 
       alert("Item updated successfully!");
-      
+
       // Refresh the main list if the function exists
       if (refreshItems) {
         await refreshItems();
       }
-      
+
       onBack(); // Go back to the dashboard list
     } catch (err) {
       console.error("Update error:", err);

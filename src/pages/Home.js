@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api from './api';
+import api from '../api';
 import { MapPin } from 'lucide-react';
 
 const Home = () => {
@@ -11,14 +11,12 @@ const Home = () => {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await fetch('${config.api.baseUrl}/items');
-                if (!response.ok) throw new Error('HTTP error! status: ${response.status}');
-                const data = await response.json();
+                const { data } = await api.get('/items');
 
                 if (!Array.isArray(data)) throw new Error("Invalid data format from API");
 
                 const mappedItems = data
-                    .slice(0, 3) 
+                    .slice(0, 3)
                     .map(item => ({
                         id: item.id,
                         name: item.item_name,
@@ -44,7 +42,7 @@ const Home = () => {
         if (!dateString) return '';
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return dateString;
-        return date.toLocaleDateString('en-GB'); 
+        return date.toLocaleDateString('en-GB');
     };
 
     return (
@@ -73,10 +71,9 @@ const Home = () => {
                                 <div className="item-meta">🕒 {formatDate(item.date)}</div>
                                 <span className="item-tag">{item.type}</span>
                                 <br />
-                                <span className={`item-status ${
-                                    item.status && item.status.toLowerCase().includes('avail') ? 'status-available' :
-                                    item.status && item.status.toLowerCase() === 'claimed' ? 'status-claimed' : ''
-                                }`}>
+                                <span className={`item-status ${item.status && item.status.toLowerCase().includes('avail') ? 'status-available' :
+                                        item.status && item.status.toLowerCase() === 'claimed' ? 'status-claimed' : ''
+                                    }`}>
                                     {item.status}
                                 </span>
                             </div>

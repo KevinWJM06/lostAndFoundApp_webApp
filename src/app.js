@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import './index.css';
 
 // Components
@@ -37,12 +37,12 @@ function App() {
 
 // Helper Wrappers
 const LoginModalWrapper = () => {
-  const navigate = React.useNavigate(); 
+  const navigate = useNavigate();
   return <LoginModal onClose={() => navigate('/')} onLoginSuccess={() => navigate('/admin')} />;
 };
 
 const AdminDashboardWrapper = () => {
-  const navigate = React.useNavigate();
+  const navigate = useNavigate();
   return <AdminDashboard onLogout={() => navigate('/')} />;
 };
 
