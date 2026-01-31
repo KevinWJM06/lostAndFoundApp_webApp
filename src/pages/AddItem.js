@@ -25,6 +25,7 @@ const AddItem = () => {
         setIsSubmitting(true);
 
         try {
+            // FIX: Using api.post instead of fetch + config
             await api.post('/items', {
                 item_name: formData.name,
                 category: formData.type,
