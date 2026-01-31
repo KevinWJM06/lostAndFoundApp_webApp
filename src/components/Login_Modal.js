@@ -34,3 +34,5 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
     </div>
   );
 };
+
+export default LoginModal;

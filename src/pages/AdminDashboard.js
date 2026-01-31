@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import config from "../config/API";
-import ViewItems from "../All_Items"; // go up one folder
-import EditItem from "../Edit_Item";
-import DeleteItem from "../Confirm_Delete";
 
-const API_BASE_URL = "https://lnfrp.onrender.com"; // Your backend URL
+// FIX: Use './' because these files are in the same folder (src/pages)
+import ViewItems from "./All_Items"; 
+import EditItem from "./Edit_Item";
+import DeleteItem from "./Confirm_delete";
 
 const AdminDashboard = ({ onLogout }) => {
   const [items, setItems] = useState([]);
-  const [currentView, setCurrentView] = useState("list"); // "list", "edit", "delete"
+  const [currentView, setCurrentView] = useState("list");
   const [selectedItem, setSelectedItem] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -16,7 +16,7 @@ const AdminDashboard = ({ onLogout }) => {
   const fetchItems = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/items`);
+      const res = await fetch('${config.api.baseUrl}/items');
       if (!res.ok) throw new Error("Failed to fetch items");
       const data = await res.json();
 
@@ -42,7 +42,6 @@ const AdminDashboard = ({ onLogout }) => {
     fetchItems();
   }, []);
 
-  // --- Handlers ---
   const handleEdit = (item) => {
     setSelectedItem(item);
     setCurrentView("edit");
@@ -55,9 +54,9 @@ const AdminDashboard = ({ onLogout }) => {
 
   const handleConfirmDelete = async (id) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/items/${id}`, { method: "DELETE" });
+      const res = await fetch('${config.api.baseUrl}/items/${id}, { method: "DELETE" }');
       if (!res.ok) throw new Error("Delete failed");
-      await fetchItems(); // Refresh list after deletion
+      await fetchItems(); 
       setCurrentView("list");
       setSelectedItem(null);
     } catch (err) {
@@ -76,9 +75,7 @@ const AdminDashboard = ({ onLogout }) => {
       <div className="admin-container" style={{ maxWidth: 1200 }}>
         <div className="admin-header">
           <h1>Admin Dashboard</h1>
-          <button className="btn btn-outline" onClick={onLogout}>
-            Logout
-          </button>
+          <button className="btn btn-outline" onClick={onLogout}>Logout</button>
         </div>
 
         {isLoading && currentView === "list" && <p>Loading items...</p>}
@@ -96,7 +93,7 @@ const AdminDashboard = ({ onLogout }) => {
           <EditItem
             item={selectedItem}
             onBack={handleBackToList}
-            refreshItems={fetchItems} // Refresh list after editing
+            refreshItems={fetchItems} 
           />
         )}
 

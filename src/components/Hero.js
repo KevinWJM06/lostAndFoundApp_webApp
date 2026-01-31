@@ -12,3 +12,5 @@ const Hero = ({ onReportClick, onViewAllClick }) => (
     </div>
   </section>
 );
+
+export default Hero;
