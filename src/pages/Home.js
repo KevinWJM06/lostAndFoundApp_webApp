@@ -1,9 +1,9 @@
-// --- RecentItems Component ---
 import React, { useState, useEffect } from 'react';
-import config from '../config/API'; // make sure path is correct
+import { Link } from 'react-router-dom';
+import config from '../config/API';
 import { MapPin } from 'lucide-react';
 
-const RecentItems = ({ onViewAllClick }) => {
+const Home = () => {
     const [items, setItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
@@ -11,14 +11,14 @@ const RecentItems = ({ onViewAllClick }) => {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await fetch(`${config.api.baseUrl}/items`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const response = await fetch('${config.api.baseUrl}/items');
+                if (!response.ok) throw new Error('HTTP error! status: ${response.status}');
                 const data = await response.json();
 
                 if (!Array.isArray(data)) throw new Error("Invalid data format from API");
 
                 const mappedItems = data
-                    .slice(0, 3) // only last 3 items
+                    .slice(0, 3) 
                     .map(item => ({
                         id: item.id,
                         name: item.item_name,
@@ -31,7 +31,7 @@ const RecentItems = ({ onViewAllClick }) => {
                 setItems(mappedItems);
             } catch (err) {
                 console.error("Error fetching items:", err);
-                setError('Unable to fetch items from backend. Check database connection.');
+                setError('Unable to fetch items.');
             } finally {
                 setIsLoading(false);
             }
@@ -44,7 +44,7 @@ const RecentItems = ({ onViewAllClick }) => {
         if (!dateString) return '';
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return dateString;
-        return date.toLocaleDateString('en-GB');
+        return date.toLocaleDateString('en-GB'); 
     };
 
     return (
@@ -52,18 +52,18 @@ const RecentItems = ({ onViewAllClick }) => {
             <div className="container">
                 <div className="recent-items-header">
                     <h2>Recently Found</h2>
-                    <span
-                        onClick={onViewAllClick}
-                        style={{ color: 'var(--primary-blue)', textDecoration: 'none', fontWeight: 500, cursor: 'pointer' }}
+                    <Link
+                        to="/items"
+                        style={{ color: 'var(--primary-blue)', textDecoration: 'none', fontWeight: 500 }}
                     >
                         View All &rarr;
-                    </span>
+                    </Link>
                 </div>
 
                 {isLoading ? (
-                    <p>Loading items from database...</p>
+                    <p>Loading items...</p>
                 ) : error ? (
-                    <div style={{ color: 'red', padding: '1rem', textAlign: 'center' }}>{error}</div>
+                    <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>
                 ) : items.length > 0 ? (
                     <div className="recent-items-grid">
                         {items.map(item => (
@@ -74,8 +74,8 @@ const RecentItems = ({ onViewAllClick }) => {
                                 <span className="item-tag">{item.type}</span>
                                 <br />
                                 <span className={`item-status ${
-                                    item.status.toLowerCase().includes('avail') ? 'status-available' :
-                                    item.status.toLowerCase() === 'claimed' ? 'status-claimed' : ''
+                                    item.status && item.status.toLowerCase().includes('avail') ? 'status-available' :
+                                    item.status && item.status.toLowerCase() === 'claimed' ? 'status-claimed' : ''
                                 }`}>
                                     {item.status}
                                 </span>
@@ -83,14 +83,11 @@ const RecentItems = ({ onViewAllClick }) => {
                         ))}
                     </div>
                 ) : (
-                    <div style={{ padding: '2rem', textAlign: 'center', background: '#f8f9fa', borderRadius: 8 }}>
-                        <p style={{ color: '#6c757d' }}>No items found.</p>
-                        <small>Connect to backend database.</small>
-                    </div>
+                    <p style={{ textAlign: 'center', color: '#666' }}>No items found recently.</p>
                 )}
             </div>
         </section>
     );
 };
 
-export default RecentItems;
+export default Home;
