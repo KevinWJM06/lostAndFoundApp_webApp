@@ -1,5 +1,5 @@
 // Define your backend URL (using your Render link)
-const API_URL = "https://lnfrp.onrender.com";
+const API_URL = process.env.REACT_APP_API_URL || "https://lnfrp.onrender.com";
 
 const getHeaders = () => {
     const headers = {
@@ -67,7 +67,7 @@ export const login = (token) => {
 
 export const logout = () => {
     localStorage.removeItem('token');
-    window.location.href = '/login'; 
+    window.location.href = '/login';
 };
 
 export const getToken = () => {
