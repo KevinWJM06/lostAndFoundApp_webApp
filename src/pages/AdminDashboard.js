@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import ViewItems from "../viewitems"; // go up one folder
-import EditItem from "../edit";
-import DeleteItem from "../delete";
+import config from "../config/API";
+import ViewItems from "../All_Items"; // go up one folder
+import EditItem from "../Edit_Item";
+import DeleteItem from "../Confirm_Delete";
 
 const API_BASE_URL = "https://lnfrp.onrender.com"; // Your backend URL
 
@@ -44,7 +45,7 @@ const AdminDashboard = ({ onLogout }) => {
   // --- Handlers ---
   const handleEdit = (item) => {
     setSelectedItem(item);
-    setCurrentView("edit  ");
+    setCurrentView("edit");
   };
 
   const handleDelete = (item) => {

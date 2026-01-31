@@ -1,7 +1,38 @@
 import React from "react";
+import config from "../config/API";
 import { MapPin } from "lucide-react";
 
-const ViewItems = ({ items, isAdmin, onEdit, onDelete, onBack }) => {
+const ViewItems = ({ items: initialItems, isAdmin, onEdit, onDelete, onBack }) => {
+  const [items, setItems] = useState(initialItems || []);
+  const [loading, setLoading] = useState(!initialItems);
+
+  // If no items are passed (public view), fetch them
+  useEffect(() => {
+    if (!initialItems || initialItems.length === 0) {
+      const fetchItems = async () => {
+        try {
+          const res = await fetch('${config.api.baseUrl}/items');
+          const data = await res.json();
+          const mapped = data.map((item) => ({
+             id: item.id,
+             name: item.item_name,
+             location: item.location,
+             type: item.category,
+             status: item.status,
+          }));
+          setItems(mapped);
+        } catch(e) { console.error(e); }
+        setLoading(false);
+      };
+      // Only fetch if we are NOT admin (admin passes items in)
+      if (!isAdmin) fetchItems();
+      else setLoading(false);
+    } else {
+      setItems(initialItems);
+      setLoading(false);
+    }
+    }, [initialItems, isAdmin]);
+
   return (
     <div className="container" style={{ padding: isAdmin ? "0" : "2rem 1.5rem" }}>
       {!isAdmin && (

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
+import config from "../config/API";
 
 const EditItem = ({ item, onBack }) => {
   const [formData, setFormData] = useState({
@@ -57,6 +56,7 @@ const EditItem = ({ item, onBack }) => {
       }
 
       console.log("Item updated successfully");
+      if (refreshItems) await refreshItems();
       onBack();
     } catch (err) {
       console.error("Update error:", err);
