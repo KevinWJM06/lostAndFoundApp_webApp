@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const EditItem = ({ item, onBack }) => {
   const [formData, setFormData] = useState({
@@ -35,7 +36,7 @@ const EditItem = ({ item, onBack }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/items/${item.id}`,
+        `${API_URL}/items/${item.id}`,
         {
           method: "PUT",
           headers: {
