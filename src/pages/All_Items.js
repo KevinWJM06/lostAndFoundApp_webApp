@@ -1,5 +1,6 @@
-import React from "react";
-import api from './api';
+import React, {useState, useEffect}from "react";
+import { useNavigate } from "react-router-dom";
+import api from '../services/api';
 import { MapPin } from "lucide-react";
 
 const ViewItems = ({ items: initialItems, isAdmin, onEdit, onDelete, onBack }) => {

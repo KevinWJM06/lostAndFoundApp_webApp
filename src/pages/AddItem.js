@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from './api';
+import api from '../services/api';
 
 const AddItem = () => {
     const navigate = useNavigate();
@@ -25,22 +25,15 @@ const AddItem = () => {
         setIsSubmitting(true);
         
         try {
-            const response = await fetch(`${config.api.baseUrl}/items`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    item_name: formData.name,
-                    category: formData.type,
-                    location: formData.location,
-                    description: formData.description,
-                    status: 'Available',
-                    date_found: new Date().toISOString()
-                }),
+            // FIX: Using api.post instead of fetch + config
+            await api.post('/items', {
+                item_name: formData.name,
+                category: formData.type,
+                location: formData.location,
+                description: formData.description,
+                status: 'Available',
+                date_found: new Date().toISOString()
             });
-
-            if (!response.ok) throw new Error('Failed to submit item');
             
             alert('Item reported successfully!');
             navigate('/'); 
