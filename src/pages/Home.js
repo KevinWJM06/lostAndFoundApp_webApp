@@ -1,6 +1,6 @@
 // --- RecentItems Component ---
 import React, { useState, useEffect } from 'react';
-import config from '../config/apiConfig'; // make sure path is correct
+import config from '../config/API\\'; // make sure path is correct
 import { MapPin } from 'lucide-react';
 
 const RecentItems = ({ onViewAllClick }) => {

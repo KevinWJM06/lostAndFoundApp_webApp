@@ -5,36 +5,7 @@ import './index.css';
 import AddItem from './components/add';
 import ViewItems from './components/viewitems';
 import RecentItems from './components/recentitems';
-import AdminDashboard from './components/AdminDashboard';
-
-// --- Navbar Component ---
-const Navbar = ({ onAdminClick }) => (
-  <nav className="navbar">
-    <div className="container navbar-container">
-      <a href="/" className="navbar-logo">
-        <div className="navbar-logo-icon"></div>
-        Lost & Found
-      </a>
-      <button className="btn btn-outline" onClick={onAdminClick}>
-        Staff & Admin
-      </button>
-    </div>
-  </nav>
-);
-
-// --- Hero Component ---
-const Hero = ({ onReportClick, onViewAllClick }) => (
-  <section className="hero-section">
-    <div className="container hero-content">
-      <h1>Lost something on campus?</h1>
-      <p>Quickly search the database or report an item you've found or lost.</p>
-      <div className="hero-actions">
-        <button className="btn btn-primary" onClick={onReportClick}>Report Found Item</button>
-        <button className="btn btn-outline" onClick={onViewAllClick}>View All Lost Items</button>
-      </div>
-    </div>
-  </section>
-);
+import AdminDashboard from './pages/AdminDashboard';
 
 // --- LoginModal Component ---
 const LoginModal = ({ onClose, onLoginSuccess }) => {
