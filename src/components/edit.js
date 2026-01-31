@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-// 🔑 Backend URL (Render)
+// 🔑 Use your Render backend URL
 const API_BASE_URL = "https://lnfrp.onrender.com";
 
 const EditItem = ({ item, onBack, refreshItems }) => {
@@ -11,7 +11,6 @@ const EditItem = ({ item, onBack, refreshItems }) => {
     description: "",
   });
 
-  // Load the selected item into the form
   useEffect(() => {
     if (item) {
       setFormData({
@@ -23,16 +22,11 @@ const EditItem = ({ item, onBack, refreshItems }) => {
     }
   }, [item]);
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Submit updated data to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -41,19 +35,17 @@ const EditItem = ({ item, onBack, refreshItems }) => {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          item_name: formData.name,   // match backend field
+          item_name: formData.name,
           category: formData.type,
           location: formData.location,
-          description: formData.description,
-          status: item.status,        // keep existing status
+          status: item.status,
         }),
       });
 
       if (!response.ok) throw new Error("Failed to update item");
 
-      // Refresh the admin dashboard list
-      await refreshItems();
-      onBack(); // go back to the list view
+      await refreshItems(); // refresh parent list
+      onBack(); // go back to list
     } catch (err) {
       console.error("Update error:", err);
       alert("Failed to update item");
@@ -64,11 +56,7 @@ const EditItem = ({ item, onBack, refreshItems }) => {
 
   return (
     <div className="container" style={{ padding: "0" }}>
-      <button
-        onClick={onBack}
-        className="btn btn-outline"
-        style={{ marginBottom: "1rem" }}
-      >
+      <button className="btn btn-outline" onClick={onBack} style={{ marginBottom: "1rem" }}>
         &larr; Back to List
       </button>
 
@@ -78,34 +66,17 @@ const EditItem = ({ item, onBack, refreshItems }) => {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Item Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
+            <input type="text" name="name" value={formData.name} onChange={handleChange} required />
           </div>
 
           <div className="form-group">
-            <label>Location Found</label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-            />
+            <label>Location</label>
+            <input type="text" name="location" value={formData.location} onChange={handleChange} required />
           </div>
 
           <div className="form-group">
             <label>Category</label>
-            <select
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
-              required
-            >
+            <select name="type" value={formData.type} onChange={handleChange} required>
               <option value="">Select</option>
               <option value="Electronics">Electronics</option>
               <option value="Clothing">Clothing</option>
@@ -115,21 +86,7 @@ const EditItem = ({ item, onBack, refreshItems }) => {
             </select>
           </div>
 
-          <div className="form-group">
-            <label>Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={4}
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary"
-            style={{ width: "100%", marginTop: "1rem" }}
-          >
+          <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "1rem" }}>
             Save Changes
           </button>
         </form>

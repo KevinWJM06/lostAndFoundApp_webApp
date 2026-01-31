@@ -99,68 +99,53 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
   );
 };
 
-// --- Admin Dashboard ---
 const AdminDashboard = ({ onLogout }) => {
-  const [currentView, setCurrentView] = useState("list"); // list / edit / delete
-  const [items, setItems] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [currentAdminView, setCurrentAdminView] = React.useState("list");
+  const [items, setItems] = React.useState([]);
+  const [itemToEdit, setItemToEdit] = React.useState(null);
+  const [itemToDelete, setItemToDelete] = React.useState(null);
 
-  // Fetch items from backend
+  const API_BASE_URL = "https://lnfrp.onrender.com";
+
   const fetchItems = async () => {
-    setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/items`);
-      if (!response.ok) throw new Error("Failed to fetch items");
-      const data = await response.json();
-
-      const mappedItems = data.map((item) => ({
-        id: item.id,
-        name: item.item_name,
-        location: item.location,
-        type: item.category,
-        status: item.status,
-        description: item.description,
+      const res = await fetch(`${API_BASE_URL}/items`);
+      const data = await res.json();
+      const mapped = data.map((i) => ({
+        id: i.id,
+        name: i.item_name,
+        location: i.location,
+        type: i.category,
+        status: i.status,
+        description: i.description,
       }));
-      setItems(mappedItems);
+      setItems(mapped);
     } catch (err) {
       console.error(err);
-      setItems([]);
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     fetchItems();
   }, []);
 
   const handleEditClick = (item) => {
-    setSelectedItem(item);
-    setCurrentView("edit");
+    setItemToEdit(item);
+    setCurrentAdminView("edit");
   };
 
-  const handleDeleteClick = (item) => {
-    setSelectedItem(item);
-    setCurrentView("delete");
-  };
-
-  const handleBackToList = () => {
-    setSelectedItem(null);
-    setCurrentView("list");
-  };
-
-  const handleConfirmDelete = async (id) => {
+  const handleDeleteClick = async (item) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/items/${id}`, { method: "DELETE" });
-      if (!response.ok) throw new Error("Failed to delete item");
-      await fetchItems();
-      handleBackToList();
+      const res = await fetch(`${API_BASE_URL}/items/${item.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      await fetchItems(); // refresh after delete
     } catch (err) {
       console.error(err);
-      alert("Failed to delete item");
+      alert("Delete failed");
     }
   };
+
+  const handleBack = () => setCurrentAdminView("list");
 
   return (
     <div className="admin-overlay">
@@ -172,34 +157,22 @@ const AdminDashboard = ({ onLogout }) => {
           </button>
         </div>
 
-        {currentView === "list" && (
+        {currentAdminView === "list" && (
           <ViewItems
             items={items}
             isAdmin={true}
             onEdit={handleEditClick}
             onDelete={handleDeleteClick}
-            onBack={handleBackToList}
           />
         )}
 
-        {currentView === "edit" && selectedItem && (
-          <EditItem item={selectedItem} onBack={handleBackToList} refreshItems={fetchItems} />
+        {currentAdminView === "edit" && itemToEdit && (
+          <EditItem item={itemToEdit} onBack={handleBack} refreshItems={fetchItems} />
         )}
-
-        {currentView === "delete" && selectedItem && (
-          <DeleteItem
-            item={selectedItem}
-            onBack={handleBackToList}
-            onConfirm={() => handleConfirmDelete(selectedItem.id)}
-          />
-        )}
-
-        {isLoading && currentView === "list" && <p>Loading items...</p>}
       </div>
     </div>
   );
 };
-
 // --- Main App ---
 const App = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);

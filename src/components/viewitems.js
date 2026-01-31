@@ -1,23 +1,12 @@
 import React from "react";
 import { MapPin } from "lucide-react";
 
-const ViewItems = ({ items = [], isAdmin = false, onEdit, onDelete, onBack }) => {
-  if (!items) items = [];
-
+const ViewItems = ({ items, isAdmin, onEdit, onDelete, onBack }) => {
   return (
-    <div
-      className="container"
-      style={{
-        padding: isAdmin ? "0" : "calc(var(--header-height) + 2rem) 1.5rem 2rem 1.5rem",
-      }}
-    >
+    <div className="container" style={{ padding: isAdmin ? "0" : "2rem 1.5rem" }}>
       {!isAdmin && (
-        <button
-          onClick={onBack}
-          className="btn btn-outline"
-          style={{ marginBottom: "1rem" }}
-        >
-          &larr; Back
+        <button onClick={onBack} className="btn btn-outline" style={{ marginBottom: "1rem" }}>
+          &larr; Back to Home
         </button>
       )}
 
@@ -37,9 +26,9 @@ const ViewItems = ({ items = [], isAdmin = false, onEdit, onDelete, onBack }) =>
               <br />
               <span
                 className={`item-status ${
-                  item.status?.toLowerCase().includes("avail")
+                  item.status && item.status.toLowerCase().includes("avail")
                     ? "status-available"
-                    : item.status?.toLowerCase() === "claimed"
+                    : item.status && item.status.toLowerCase() === "claimed"
                     ? "status-claimed"
                     : ""
                 }`}
@@ -48,25 +37,11 @@ const ViewItems = ({ items = [], isAdmin = false, onEdit, onDelete, onBack }) =>
               </span>
 
               {isAdmin && (
-                <div
-                  style={{
-                    marginTop: "1rem",
-                    display: "flex",
-                    gap: "0.5rem",
-                  }}
-                >
-                  <button
-                    className="btn btn-outline"
-                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    onClick={() => onEdit(item)}
-                  >
+                <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem" }}>
+                  <button className="btn btn-outline" onClick={() => onEdit(item)}>
                     Edit
                   </button>
-                  <button
-                    className="btn btn-danger"
-                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    onClick={() => onDelete(item)}
-                  >
+                  <button className="btn btn-danger" onClick={() => onDelete(item)}>
                     Delete
                   </button>
                 </div>
@@ -74,19 +49,7 @@ const ViewItems = ({ items = [], isAdmin = false, onEdit, onDelete, onBack }) =>
             </div>
           ))
         ) : (
-          <div
-            style={{
-              padding: "3rem",
-              textAlign: "center",
-              background: "#f8f9fa",
-              borderRadius: "8px",
-              gridColumn: "1 / -1",
-            }}
-          >
-            <p style={{ color: "#6c757d", fontSize: "1.1rem" }}>
-              No items found.
-            </p>
-          </div>
+          <p style={{ padding: "1rem", textAlign: "center" }}>No items found.</p>
         )}
       </div>
     </div>
