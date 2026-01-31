@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-const EditItem = ({ item, onBack }) => {
+// 🔑 BACKEND BASE URL (Render)
+const API_BASE_URL = "https://lnfrp.onrender.com";
+
+const EditItem = ({ item, onBack, refreshItems }) => {
   const [formData, setFormData] = useState({
     name: "",
     location: "",
@@ -12,9 +15,9 @@ const EditItem = ({ item, onBack }) => {
   useEffect(() => {
     if (item) {
       setFormData({
-        name: item.name || "",
+        name: item.item_name || "",
         location: item.location || "",
-        type: item.category || "", // backend uses "category"
+        type: item.category || "",
         description: item.description || "",
       });
     }
@@ -35,17 +38,17 @@ const EditItem = ({ item, onBack }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/items/${item.id}`,
+        `${API_BASE_URL}/items/${item.id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            item_name: formData.name,   // MUST match backend
+            item_name: formData.name,
             category: formData.type,
             location: formData.location,
-            status: item.status,        // keep existing status
+            status: item.status,
           }),
         }
       );
@@ -54,8 +57,10 @@ const EditItem = ({ item, onBack }) => {
         throw new Error("Failed to update item");
       }
 
-      console.log("Item updated successfully");
+      // ✅ refresh data + go back
+      await refreshItems();
       onBack();
+
     } catch (err) {
       console.error("Update error:", err);
       alert("Failed to update item");
@@ -74,21 +79,17 @@ const EditItem = ({ item, onBack }) => {
         &larr; Back to List
       </button>
 
-      <div
-        className="card"
-        style={{ maxWidth: "600px", margin: "0 auto" }}
-      >
+      <div className="card" style={{ maxWidth: "600px", margin: "0 auto" }}>
         <h2 style={{ marginBottom: "1.5rem", textAlign: "center" }}>
           Edit Item
         </h2>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Item Name</label>
+            <label>Item Name</label>
             <input
               type="text"
               name="name"
-              className="form-input"
               value={formData.name}
               onChange={handleChange}
               required
@@ -96,11 +97,10 @@ const EditItem = ({ item, onBack }) => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Location Found</label>
+            <label>Location</label>
             <input
               type="text"
               name="location"
-              className="form-input"
               value={formData.location}
               onChange={handleChange}
               required
@@ -108,15 +108,14 @@ const EditItem = ({ item, onBack }) => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Category</label>
+            <label>Category</label>
             <select
               name="type"
-              className="form-input"
               value={formData.type}
               onChange={handleChange}
               required
             >
-              <option value="">Select a category</option>
+              <option value="">Select</option>
               <option value="Electronics">Electronics</option>
               <option value="Clothing">Clothing</option>
               <option value="Bottle">Bottle</option>
@@ -125,22 +124,7 @@ const EditItem = ({ item, onBack }) => {
             </select>
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Description</label>
-            <textarea
-              name="description"
-              className="form-input"
-              value={formData.description}
-              onChange={handleChange}
-              rows="4"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary"
-            style={{ width: "100%", marginTop: "1rem" }}
-          >
+          <button type="submit" className="btn btn-primary">
             Save Changes
           </button>
         </form>

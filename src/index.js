@@ -95,34 +95,108 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
 
 // --- AdminDashboard Component ---
 const AdminDashboard = ({ onLogout }) => {
-    const [currentAdminView, setCurrentAdminView] = useState('list');
-    const [itemToEdit, setItemToEdit] = useState(null);
-    const [itemToDelete, setItemToDelete] = useState(null);
+  const [currentAdminView, setCurrentAdminView] = useState("list");
+  const [itemToEdit, setItemToEdit] = useState(null);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [items, setItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-    const handleEditClick = item => { setItemToEdit(item); setCurrentAdminView('edit'); };
-    const handleDeleteClick = item => { setItemToDelete(item); setCurrentAdminView('delete'); };
-    const handleBackToList = () => { setItemToEdit(null); setItemToDelete(null); setCurrentAdminView('list'); };
-    const handleConfirmDelete = async id => { console.log("Delete confirmed for ID:", id); handleBackToList(); };
+  // --- Fetch items from backend ---
+  const fetchItems = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(config.api.baseUrl);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
 
-    return (
-        <div className="admin-overlay">
-            <div className="admin-container" style={{ maxWidth: 1200 }}>
-                <div className="admin-header">
-                    <h1>Admin Dashboard</h1>
-                    <button className="btn btn-outline" onClick={onLogout}>Logout</button>
-                </div>
-                {currentAdminView === 'list' ? (
-                    <ViewItems isAdmin={true} onEdit={handleEditClick} onDelete={handleDeleteClick} />
-                ) : currentAdminView === 'edit' ? (
-                    <EditItem item={itemToEdit} onBack={handleBackToList} />
-                ) : (
-                    <DeleteItem item={itemToDelete} onBack={handleBackToList} onConfirm={handleConfirmDelete} />
-                )}
-            </div>
+      const mappedItems = data.map((item) => ({
+        id: item.id,
+        name: item.item_name,
+        location: item.location,
+        type: item.category,
+        status: item.status,
+        description: item.description,
+      }));
+
+      setItems(mappedItems);
+    } catch (error) {
+      console.error("Error fetching items:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  // --- Handlers ---
+  const handleEditClick = (item) => {
+    setItemToEdit(item);
+    setCurrentAdminView("edit");
+  };
+
+  const handleDeleteClick = (item) => {
+    setItemToDelete(item);
+    setCurrentAdminView("delete");
+  };
+
+  const handleBackToList = () => {
+    setItemToEdit(null);
+    setItemToDelete(null);
+    setCurrentAdminView("list");
+  };
+
+  const handleConfirmDelete = async (id) => {
+    try {
+      const response = await fetch(`${config.api.baseUrl}/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to delete item");
+
+      await fetchItems(); // refresh list after delete
+      handleBackToList();
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete item");
+    }
+  };
+
+  return (
+    <div className="admin-overlay">
+      <div className="admin-container" style={{ maxWidth: 1200 }}>
+        <div className="admin-header">
+          <h1>Admin Dashboard</h1>
+          <button className="btn btn-outline" onClick={onLogout}>
+            Logout
+          </button>
         </div>
-    );
-};
 
+        {currentAdminView === "list" ? (
+          <ViewItems
+            items={items}
+            isAdmin={true}
+            onEdit={handleEditClick}
+            onDelete={handleDeleteClick}
+            onRefresh={fetchItems} // pass refresh function if needed
+          />
+        ) : currentAdminView === "edit" ? (
+          <EditItem
+            item={itemToEdit}
+            onBack={handleBackToList}
+            refreshItems={fetchItems} // pass refresh function here
+          />
+        ) : (
+          <DeleteItem
+            item={itemToDelete}
+            onBack={handleBackToList}
+            onConfirm={handleConfirmDelete}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
 // --- Main App Component ---
 function App() {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
