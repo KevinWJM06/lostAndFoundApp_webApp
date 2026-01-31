@@ -1,36 +1,36 @@
 import React, { useState, useEffect } from "react";
-import ViewItems from "./ViewItems";
-import EditItem from "./Edit";
-import DeleteItem from "./Delete";
+import ViewItems from "./viewitems";
+import EditItem from "./edit";
+import DeleteItem from "./delete";
 
-const API_BASE_URL = "https://lnfrp.onrender.com";
+const API_BASE_URL = "https://lnfrp.onrender.com"; // Your backend URL
 
 const AdminDashboard = ({ onLogout }) => {
-  const [currentAdminView, setCurrentAdminView] = useState("list");
-  const [itemToEdit, setItemToEdit] = useState(null);
-  const [itemToDelete, setItemToDelete] = useState(null);
   const [items, setItems] = useState([]);
+  const [currentView, setCurrentView] = useState("list"); // "list", "edit", "delete"
+  const [selectedItem, setSelectedItem] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // -------- Fetch Items --------
+  // --- Fetch items from backend ---
   const fetchItems = async () => {
     setIsLoading(true);
     try {
       const res = await fetch(`${API_BASE_URL}/items`);
-      if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
+      if (!res.ok) throw new Error("Failed to fetch items");
       const data = await res.json();
-      setItems(
-        data.map((item) => ({
-          id: item.id,
-          name: item.item_name,
-          location: item.location,
-          type: item.category,
-          status: item.status,
-          description: item.description,
-        }))
-      );
+
+      const mapped = data.map((item) => ({
+        id: item.id,
+        name: item.item_name,
+        location: item.location,
+        type: item.category,
+        status: item.status,
+        description: item.description,
+      }));
+
+      setItems(mapped);
     } catch (err) {
-      console.error("Error fetching items:", err);
+      console.error("Fetch error:", err);
       setItems([]);
     } finally {
       setIsLoading(false);
@@ -41,36 +41,35 @@ const AdminDashboard = ({ onLogout }) => {
     fetchItems();
   }, []);
 
-  // -------- Handlers --------
-  const handleEditClick = (item) => {
-    setItemToEdit(item);
-    setCurrentAdminView("edit");
+  // --- Handlers ---
+  const handleEdit = (item) => {
+    setSelectedItem(item);
+    setCurrentView("edit");
   };
 
-  const handleDeleteClick = (item) => {
-    setItemToDelete(item);
-    setCurrentAdminView("delete");
-  };
-
-  const handleBackToList = () => {
-    setItemToEdit(null);
-    setItemToDelete(null);
-    setCurrentAdminView("list");
+  const handleDelete = (item) => {
+    setSelectedItem(item);
+    setCurrentView("delete");
   };
 
   const handleConfirmDelete = async (id) => {
     try {
       const res = await fetch(`${API_BASE_URL}/items/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete item");
-      await fetchItems();
-      handleBackToList();
+      if (!res.ok) throw new Error("Delete failed");
+      await fetchItems(); // Refresh list after deletion
+      setCurrentView("list");
+      setSelectedItem(null);
     } catch (err) {
-      console.error("Delete error:", err);
+      console.error(err);
       alert("Failed to delete item");
     }
   };
 
-  // -------- Render --------
+  const handleBackToList = () => {
+    setCurrentView("list");
+    setSelectedItem(null);
+  };
+
   return (
     <div className="admin-overlay">
       <div className="admin-container" style={{ maxWidth: 1200 }}>
@@ -81,24 +80,31 @@ const AdminDashboard = ({ onLogout }) => {
           </button>
         </div>
 
-        {isLoading && currentAdminView === "list" && <p style={{ padding: "1rem" }}>Loading items...</p>}
+        {isLoading && currentView === "list" && <p>Loading items...</p>}
 
-        {currentAdminView === "list" && !isLoading && (
+        {currentView === "list" && !isLoading && (
           <ViewItems
             items={items}
             isAdmin={true}
-            onEdit={handleEditClick}
-            onDelete={handleDeleteClick}
-            onBack={handleBackToList}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         )}
 
-        {currentAdminView === "edit" && itemToEdit && (
-          <EditItem item={itemToEdit} onBack={handleBackToList} refreshItems={fetchItems} />
+        {currentView === "edit" && selectedItem && (
+          <EditItem
+            item={selectedItem}
+            onBack={handleBackToList}
+            refreshItems={fetchItems} // Refresh list after editing
+          />
         )}
 
-        {currentAdminView === "delete" && itemToDelete && (
-          <DeleteItem item={itemToDelete} onBack={handleBackToList} onConfirm={() => handleConfirmDelete(itemToDelete.id)} />
+        {currentView === "delete" && selectedItem && (
+          <DeleteItem
+            item={selectedItem}
+            onBack={handleBackToList}
+            onConfirm={() => handleConfirmDelete(selectedItem.id)}
+          />
         )}
       </div>
     </div>
