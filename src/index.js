@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
 import AddItem from './components/add';
 import ViewItems from './components/viewitems';
-import EditItem from './components/edit';
-import DeleteItem from './components/delete';
 import RecentItems from './components/recentitems';
-
-const API_BASE_URL = "https://lnfrp.onrender.com";
+import AdminDashboard from './components/AdminDashboard';
 
 // --- Navbar Component ---
 const Navbar = ({ onAdminClick }) => (
@@ -75,83 +72,7 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
   );
 };
 
-// --- AdminDashboard Component ---
-const AdminDashboard = ({ onLogout }) => {
-  const [currentAdminView, setCurrentAdminView] = useState('list');
-  const [items, setItems] = useState([]);
-  const [itemToEdit, setItemToEdit] = useState(null);
-
-  const fetchItems = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/items`);
-      const data = await res.json();
-      const mapped = data.map(i => ({
-        id: i.id,
-        name: i.item_name,
-        location: i.location,
-        type: i.category,
-        status: i.status,
-        description: i.description
-      }));
-      setItems(mapped);
-    } catch (err) {
-      console.error(err);
-      setItems([]);
-    }
-  };
-
-  useEffect(() => {
-    fetchItems();
-  }, []);
-
-  const handleEditClick = (item) => {
-    setItemToEdit(item);
-    setCurrentAdminView('edit');
-  };
-
-  const handleDeleteClick = async (item) => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/items/${item.id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Delete failed");
-      await fetchItems();
-    } catch (err) {
-      console.error(err);
-      alert("Delete failed");
-    }
-  };
-
-  const handleBack = () => setCurrentAdminView('list');
-
-  return (
-    <div className="admin-overlay">
-      <div className="admin-container" style={{ maxWidth: 1200 }}>
-        <div className="admin-header">
-          <h1>Admin Dashboard</h1>
-          <button className="btn btn-outline" onClick={onLogout}>Logout</button>
-        </div>
-
-        {currentAdminView === 'list' && (
-          <ViewItems
-            items={items}
-            isAdmin={true}
-            onEdit={handleEditClick}
-            onDelete={handleDeleteClick}
-          />
-        )}
-
-        {currentAdminView === 'edit' && itemToEdit && (
-          <EditItem
-            item={itemToEdit}
-            onBack={handleBack}
-            refreshItems={fetchItems}
-          />
-        )}
-      </div>
-    </div>
-  );
-};
-
-// --- Main App ---
+// --- Main App Component ---
 function App() {
   const [currentView, setCurrentView] = useState('home');
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -168,12 +89,14 @@ function App() {
   return (
     <div className="App">
       <Navbar onAdminClick={handleAdminClick} />
+
       {currentView === 'home' && (
         <>
           <Hero onReportClick={handleNavigateAdd} onViewAllClick={handleNavigateViewAll} />
           <RecentItems onViewAllClick={handleNavigateViewAll} />
         </>
       )}
+
       {currentView === 'add' && <AddItem onBack={handleNavigateHome} />}
       {currentView === 'viewItems' && <ViewItems onBack={handleNavigateHome} />}
 
@@ -192,4 +115,8 @@ function App() {
 
 // --- Render App ---
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<React.StrictMode><App /></React.StrictMode>);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
