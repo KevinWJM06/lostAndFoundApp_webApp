@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-const API_URL = process.env.REACT_APP_API_URL;
 
-// 🔑 BACKEND BASE URL (Render)
+// 🔑 Backend URL (Render)
 const API_BASE_URL = "https://lnfrp.onrender.com";
 
 const EditItem = ({ item, onBack, refreshItems }) => {
@@ -12,19 +11,19 @@ const EditItem = ({ item, onBack, refreshItems }) => {
     description: "",
   });
 
-  // Load selected item into form
+  // Load the selected item into the form
   useEffect(() => {
     if (item) {
       setFormData({
-        name: item.item_name || "",
+        name: item.name || "",
         location: item.location || "",
-        type: item.category || "",
+        type: item.type || "",
         description: item.description || "",
       });
     }
   }, [item]);
 
-  // Handle input change
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -33,35 +32,28 @@ const EditItem = ({ item, onBack, refreshItems }) => {
     }));
   };
 
-  // Submit update to backend
+  // Submit updated data to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        `http://localhost:3000/items/${item.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            item_name: formData.name,
-            category: formData.type,
-            location: formData.location,
-            status: item.status,
-          }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/items/${item.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          item_name: formData.name,   // match backend field
+          category: formData.type,
+          location: formData.location,
+          description: formData.description,
+          status: item.status,        // keep existing status
+        }),
+      });
 
-      if (!response.ok) {
-        throw new Error("Failed to update item");
-      }
+      if (!response.ok) throw new Error("Failed to update item");
 
-      // ✅ refresh data + go back
+      // Refresh the admin dashboard list
       await refreshItems();
-      onBack();
-
+      onBack(); // go back to the list view
     } catch (err) {
       console.error("Update error:", err);
       alert("Failed to update item");
@@ -81,9 +73,7 @@ const EditItem = ({ item, onBack, refreshItems }) => {
       </button>
 
       <div className="card" style={{ maxWidth: "600px", margin: "0 auto" }}>
-        <h2 style={{ marginBottom: "1.5rem", textAlign: "center" }}>
-          Edit Item
-        </h2>
+        <h2 style={{ marginBottom: "1.5rem", textAlign: "center" }}>Edit Item</h2>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -98,7 +88,7 @@ const EditItem = ({ item, onBack, refreshItems }) => {
           </div>
 
           <div className="form-group">
-            <label>Location</label>
+            <label>Location Found</label>
             <input
               type="text"
               name="location"
@@ -125,7 +115,21 @@ const EditItem = ({ item, onBack, refreshItems }) => {
             </select>
           </div>
 
-          <button type="submit" className="btn btn-primary">
+          <div className="form-group">
+            <label>Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={4}
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="btn btn-primary"
+            style={{ width: "100%", marginTop: "1rem" }}
+          >
             Save Changes
           </button>
         </form>
